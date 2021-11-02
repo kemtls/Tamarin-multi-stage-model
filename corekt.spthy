@@ -1,0 +1,533 @@
+theory corekt
+begin
+
+functions: 
+  KEM_e_PK/1, KEM_e_Encaps_ct/2, KEM_e_Encaps_ss/2, KEM_e_Decaps/2,
+  KEM_s_PK/1, KEM_s_Encaps_ct/2, KEM_s_Encaps_ss/2, KEM_s_Decaps/2,
+  HKDFExtract/2, HKDFExpand/3,
+  HMAC/2
+
+equations:
+  // correctness of KEM_e decapsulation
+  KEM_e_Decaps(KEM_e_Encaps_ct(KEM_e_PK(sk), coins), sk) 
+  = KEM_e_Encaps_ss(KEM_e_PK(sk), coins),
+  // correctness of KEM_e decapsulation
+  KEM_s_Decaps(KEM_s_Encaps_ct(KEM_s_PK(sk), coins), sk) 
+  = KEM_s_Encaps_ss(KEM_s_PK(sk), coins)
+
+// Oracle for generating a new honest server public key
+rule ORegisterLTK:
+  let 
+    pk_B = KEM_s_PK(~sk_B)
+  in
+  [
+    Fr(~sk_B)
+  ]
+  --[
+    RegisteredLTK($B, pk_B)
+  ]->
+  [
+    !Ltk($B, pk_B, ~sk_B),
+    !Pk($B, pk_B),
+    Out(pk_B)
+  ]
+
+// Oracle for revealing session keys
+rule ORevealSessionKey:
+  [
+    !SessionKey(tid, stage, key)
+  ]
+  --[
+    RevealedSessionKey(tid, stage)
+  ]->
+  [
+    Out(key)
+  ]
+
+// Oracle for revealing long-term keys
+rule OCorruptLTK:
+  [
+    !Ltk($B, pk_B, sk_B)
+  ]
+  --[
+    CorruptedLTK($B)
+  ]->
+  [
+    Out(sk_B)
+  ]
+
+
+// The client's first protocol action, generating an outgoing ephemeral KEM public key
+rule ClientAction1:
+  let
+    pk_e = KEM_e_PK(~sk_e)
+    CLIENT_HELLO = <pk_e, ~r_c>
+    cid_1 = <'CHTS', CLIENT_HELLO>
+    ES = HKDFExtract('0', '0')
+    dES = HKDFExpand(ES, 'derived', '0')
+  in
+  [
+    Fr(~tid),
+    Fr(~sk_e),
+    Fr(~r_c)
+  ]
+  --[
+    Owner(~tid, 'anonymous'),
+    Role(~tid, 'client'),
+    CID(~tid, '1', cid_1)
+  ]->
+  [
+    Out(~tid),
+    Out(CLIENT_HELLO),
+    ClientAction1State(~tid, <~sk_e, dES>, <CLIENT_HELLO>)
+  ]
+
+rule ServerAction1:
+  let
+    CLIENT_HELLO = <pk_e, r_c>
+    ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
+    ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
+    SERVER_HELLO = <ct_e, ~r_s>
+    ES = HKDFExtract('0', '0')
+    dES = HKDFExpand(ES, 'derived', '0')
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    SERVER_CERTIFICATE = <pk_S>
+  in
+  [
+    Fr(~tid),
+    !Ltk($S, pk_S, sk_S),
+    In(CLIENT_HELLO),
+    Fr(~coins_e),
+    Fr(~r_s)
+  ]
+  --[
+    Owner(~tid, $S),
+    Peer(~tid, 'anonymous'),
+    Role(~tid, 'server'),
+    CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
+    CID(~tid, '2', cid_2), SID(~tid, '2', sid_2),
+    Accept(~tid, '1'),
+    Accept(~tid, '2'),
+    SK(~tid, '1', CHTS), FS(~tid, '1', 'wfs1'),
+    SK(~tid, '2', SHTS), FS(~tid, '2', 'wfs1')
+  ]->
+  [ 
+    Out(~tid),
+    Out(<SERVER_HELLO, SERVER_CERTIFICATE>),
+    ServerAction1State(~tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    !SessionKey(~tid, '1', CHTS),
+    !SessionKey(~tid, '2', SHTS)
+  ]
+
+rule ClientAction2:
+  let
+    SERVER_HELLO = <ct_e, r_s>
+    ss_e = KEM_e_Decaps(ct_e, sk_e)
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    SERVER_CERTIFICATE = <pk_S>
+    ct_S = KEM_s_Encaps_ct(pk_S, ~coins_S)
+    ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
+    CLIENT_KEM_CIPHERTEXT = <ct_S>
+    AHS = HKDFExtract(dHS, ss_S)
+    CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    SAHTS = HKDFExpand(AHS, 's_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    dAHS = HKDFExpand(AHS, 'derived', '0')
+    MS = HKDFExtract(dAHS, '0')
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    cid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+    sid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+  in
+  [ 
+    ClientAction1State(tid, <sk_e, dES>, <CLIENT_HELLO>), 
+    !Pk($S, pk_S),
+    In(<SERVER_HELLO, SERVER_CERTIFICATE>), 
+    Fr(~coins_S)
+  ]
+  --[
+    CID(tid, '1', cid_1), SID(tid, '1', sid_1),
+    CID(tid, '2', cid_2), SID(tid, '2', sid_2),
+    CID(tid, '3', cid_3), SID(tid, '3', sid_3),
+    CID(tid, '4', cid_4), SID(tid, '4', sid_4),
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    Peer(tid, $S),
+    Accept(tid, '1'),
+    Accept(tid, '2'),
+    Accept(tid, '3'),
+    Accept(tid, '4'),
+    Accept(tid, '5'),
+    SK(tid, '1', CHTS), FS(tid, '1', 'wfs1'),
+    SK(tid, '2', SHTS), FS(tid, '2', 'wfs1'),
+    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs2'),
+    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs2'),
+    SK(tid, '5', CATS), FS(tid, '5', 'wfs2')
+  ]->
+  [
+    !SessionKey(tid, '1', CHTS),
+    !SessionKey(tid, '2', SHTS),
+    !SessionKey(tid, '3', CAHTS),
+    !SessionKey(tid, '4', SAHTS),
+    !SessionKey(tid, '5', CATS),
+    Out(<CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
+    ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+  ]
+
+rule ServerAction2Part1:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_KEM_CIPHERTEXT = <ct_S>
+    ss_S = KEM_s_Decaps(ct_S, sk_S)
+    AHS = HKDFExtract(dHS, ss_S)
+    CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    SAHTS = HKDFExpand(AHS, 's_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    dAHS = HKDFExpand(AHS, 'derived', '0')
+  in
+  [
+    !Ltk($S, pk_S, sk_S),
+    ServerAction1State(tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    In(CLIENT_KEM_CIPHERTEXT)
+  ]
+  --[
+    CID(tid, '3', cid_3), SID(tid, '3', sid_3),
+    CID(tid, '4', cid_4), SID(tid, '4', sid_4),
+    Accept(tid, '3'),
+    Accept(tid, '4'),
+    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs1'),
+    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs1')
+  ]->
+  [
+    !SessionKey(tid, '3', CAHTS),
+    !SessionKey(tid, '4', SAHTS),
+    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+  ]
+
+rule ServerAction2Part2State:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    MS = HKDFExtract(dAHS, '0')
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    cid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+    sid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+    SF = HMAC(fk_s, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>)
+    cid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+    sid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+  in
+  [
+    !Ltk($S, pk_S, sk_S),
+    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>),
+    In(CLIENT_FINISHED)
+  ]
+  --[
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    CID(tid, '6', cid_6), SID(tid, '6', sid_6),
+    Accept(tid, '5'),
+    Accept(tid, '6'),
+    SK(tid, '5', CATS), FS(tid, '5', 'wfs1'),
+    SK(tid, '6', SATS), FS(tid, '6', 'wfs1')
+  ]->
+  [
+    !SessionKey(tid, '5', CATS),
+    !SessionKey(tid, '6', SATS),
+    Out(SERVER_FINISHED)
+  ]
+
+rule ClientAction3:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    SF = HMAC(fk_s, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>)
+    cid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+    sid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+  in
+  [
+    !Pk($S, pk_S),
+    ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
+    In(SERVER_FINISHED)
+  ]
+  --[
+    CID(tid, '6', cid_6), SID(tid, '6', sid_6),
+    Accept(tid, '6'),
+    Peer(tid, $S),
+    SK(tid, '6', SATS), FS(tid, '6', 'fs'),
+    FS(tid, '1', 'fs'),
+    FS(tid, '2', 'fs'),
+    FS(tid, '3', 'fs'),
+    FS(tid, '4', 'fs'),
+    FS(tid, '5', 'fs'),
+    Auth(tid, '1'),
+    Auth(tid, '2'),
+    Auth(tid, '3'),
+    Auth(tid, '4'),
+    Auth(tid, '5'),
+    Auth(tid, '6')
+  ]->
+  [
+    !SessionKey(tid, '6', SATS)
+  ]
+
+lemma reachable_stage1:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '1') @ #t1
+    & Accept(tid_s, '1') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '1', sid) @ #t5
+    & SID(tid_s, '1', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage2:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '2') @ #t1
+    & Accept(tid_s, '2') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '2', sid) @ #t5
+    & SID(tid_s, '2', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage3:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '3') @ #t1
+    & Accept(tid_s, '3') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '3', sid) @ #t5
+    & SID(tid_s, '3', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage4:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '4') @ #t1
+    & Accept(tid_s, '4') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '4', sid) @ #t5
+    & SID(tid_s, '4', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage5:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '5') @ #t1
+    & Accept(tid_s, '5') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '5', sid) @ #t5
+    & SID(tid_s, '5', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage6:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '6') @ #t1
+    & Accept(tid_s, '6') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '6', sid) @ #t5
+    & SID(tid_s, '6', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma match_prop1_stage1:
+  "
+    All tid_c tid_s sid_1 key_1_c key_1_s #t1 #t2 #t3 #t4 
+    .
+    not(tid_c = tid_s)
+    & SID(tid_c, '1', sid_1) @ #t1
+    & SID(tid_s, '1', sid_1) @ #t2
+    & SK(tid_c, '1', key_1_c) @ #t3
+    & SK(tid_s, '1', key_1_s) @ #t4
+    ==> key_1_c = key_1_s
+  "
+
+lemma match_prop2:
+  "
+    All tid_a tid_b stage sid role_a role_b #t1 #t2 #t3 #t4
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage, sid) @ #t1
+    & SID(tid_b, stage, sid) @ #t2
+    & Role(tid_a, role_a) @ #t3
+    & Role(tid_b, role_b) @ #t4
+    ==> not(role_a = role_b)
+  "
+
+lemma match_prop3:
+  "
+    All tid_a tid_b stage sid #t1 #t2
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage, sid) @ #t1
+    & SID(tid_b, stage, sid) @ #t2
+    ==> 
+    (
+      Ex cid_a cid_b #t3 #t4
+      .
+      CID(tid_a, stage, cid_a) @ #t3
+      & CID(tid_a, stage, cid_b) @ #t4
+      & cid_a = cid_b
+    )
+  "
+
+lemma sk_security_stage1_client_wfs1:
+  "
+    All tid_c sid_1 key_1_c tid_s cid_1 #t1 #t2 #t3 #t4 #t5
+    .
+    // the instance is a client instance
+    Role(tid_c, 'client') @ #t1
+    // the client accepted a stage 1 key
+    & Accept(tid_c, '1') @ #t2
+    & SID(tid_c, '1', sid_1) @ #t3
+    & SK(tid_c, '1', key_1_c) @ #t3
+    // (1) the client's stage 1 key was never revealed
+    & not(Ex #t . RevealedSessionKey(tid_c, '1') @ #t)
+    // (2) the stage 1 key was never revealed at any other session with the same sid
+    & not(Ex tid_other #tt1 #tt2 .
+          not(tid_c = tid_other)
+          & SID(tid_other, '1', sid_1) @ #tt1
+          & RevealedSessionKey(tid_other, '1') @ #tt2
+    )
+    // (3) the exists a contributive partner at stage 1
+    // TODO: this is worded slightly more generally in the paper, though it collapses to the case below for KEMTLS
+    & CID(tid_c, '1', cid_1) @ #t4
+    & CID(tid_s, '1', cid_1) @ #t5
+    & not(tid_c = tid_s)
+    ==>
+      not(Ex #t . K(key_1_c) @ #t)
+  "
+
+lemma sk_security_stage6_client_fs:
+  "
+    All tid_c sid_6 key_6_c #t1 #t2 #t3 #t4
+    .
+    // the instance is a client instance
+    Role(tid_c, 'client') @ #t1
+    // the client accepted a stage 6 key
+    & Accept(tid_c, '6') @ #t2
+    & SID(tid_c, '6', sid_6) @ #t3
+    & SK(tid_c, '6', key_6_c) @ #t4
+    // (1) the client's stage 6 key was never revealed
+    & not(Ex #t . RevealedSessionKey(tid_c, '6') @ #t)
+    // (2) the stage 6 key was never revealed at any other session with the same sid
+    & not(Ex tid_other #tt1 #tt2 .
+          not(tid_c = tid_other)
+          & SID(tid_other, '6', sid_6) @ #tt1
+          & RevealedSessionKey(tid_other, '6') @ #tt2
+    )
+    // (5) and either
+    // TODO: this is worded slightly more generally in the paper, though it collapses to the case below for KEMTLS
+    & (
+      // (5.a) there exists a contributive partner at stage 6
+      (
+        Ex cid_6 tid_s #tt1 #tt2 .
+        CID(tid_c, '6', cid_6) @ #tt1
+        & CID(tid_s, '6', cid_6) @ #tt2
+        & not(tid_c = tid_s)
+      )
+      // or
+      |
+      // (5.b) the peer's long-term key was not corrupted before the owner's stage 6 accepted
+      (
+        not(
+          Ex S #tt1 #tt2 .
+          Peer(tid_c, S) @ #tt1
+          & CorruptedLTK(S) @ #tt2
+          & #tt2 < #tt1
+        )
+      )
+    )
+    ==>
+      not(Ex #t . K(key_6_c) @ #t)
+  "
+
+lemma malicious_acceptance:
+  "
+    All tid stage #t_accept #t_auth
+    .
+    // the stage has accepted
+    Accept(tid, stage) @ #t_accept
+    // (1) the stage has been accepted as authenticated (which may be later than when the stage accepted)
+    & Auth(tid, stage) @ #t_auth
+    // (3) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
+    & not(
+      Ex S #tt1 #t_corrupted .
+      Peer(tid, S) @ #tt1
+      & CorruptedLTK(S) @ #t_corrupted
+      & #t_corrupted < #t_auth
+    )
+    ==>
+      // there exists a partner at this stage
+      (
+        Ex sid tid_other #tt1 #tt2 .
+        not(tid = tid_other)
+        & SID(tid, stage, sid) @ #tt1
+        & SID(tid_other, stage, sid) @ #tt2
+      )
+      // and it is unique (i.e., there are not three distinct instances with this sid)
+      & (
+        not(
+          Ex sid tid_1 tid_2 #tt0 #tt1 #tt2 .
+          not(tid = tid_1)
+          & not(tid = tid_2)
+          & not(tid_1 = tid_2)
+          & SID(tid, stage, sid) @ #tt0
+          & SID(tid_1, stage, sid) @ #tt1
+          & SID(tid_2, stage, sid) @ #tt2
+        )
+      )
+  "
+
+end
