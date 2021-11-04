@@ -32,8 +32,8 @@ rule KEMTLS_SAUTH_ServerAction1:
     CID(~tid, '2', cid_2), SID(~tid, '2', sid_2),
     Accept(~tid, '1'),
     Accept(~tid, '2'),
-    SK(~tid, '1', CHTS), FS(~tid, '1', 'wfs1'),
-    SK(~tid, '2', SHTS), FS(~tid, '2', 'wfs1')
+    SK(~tid, '1', CHTS), FS(~tid, '1', '1', 'wfs1'), FS(~tid, '1', '6', 'wfs1'),
+    SK(~tid, '2', SHTS), FS(~tid, '2', '2', 'wfs1'), FS(~tid, '2', '6', 'wfs1')
   ]->
   [ 
     Out(~tid),
@@ -67,8 +67,8 @@ rule KEMTLS_SAUTH_ServerAction2Part1:
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),
     Accept(tid, '4'),
-    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs1'),
-    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs1')
+    SK(tid, '3', CAHTS), FS(tid, '3', '3', 'wfs1'), FS(tid, '3', '6', 'wfs1'),
+    SK(tid, '4', SAHTS), FS(tid, '4', '4', 'wfs1'), FS(tid, '4', '6', 'wfs1')
   ]->
   [
     !SessionKey(tid, '3', CAHTS),
@@ -101,8 +101,8 @@ rule KEMTLS_SAUTH_ServerAction2Part2:
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),
     Accept(tid, '5'),
     Accept(tid, '6'),
-    SK(tid, '5', CATS), FS(tid, '5', 'wfs1'),
-    SK(tid, '6', SATS), FS(tid, '6', 'wfs1')
+    SK(tid, '5', CATS), FS(tid, '5', '5', 'wfs1'), FS(tid, '5', '6', 'wfs1'),
+    SK(tid, '6', SATS), FS(tid, '6', '6', 'wfs1')
   ]->
   [
     !SessionKey(tid, '5', CATS),
