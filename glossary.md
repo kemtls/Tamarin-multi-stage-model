@@ -107,8 +107,8 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `Peer(tid, P)`: Records that the alleged peer for thread `tid` is `P`.
 - `Accept(tid, stage)`: Records that thread `tid` has accepted a key in stage `stage`.
 - `SK(tid, stage, key)`: Records that thread `tid` has accepted key `key` in stage `stage`.
-- `FS(tid, stage, fslevel)`: Records that thread `tid` has accepted a key in stage `stage` as having forward secrecy level `fslevel` (in `wfs1`, `wfs2`, `fs`).
-- `Auth(tid, stage)`: Records that thread `tid` has accepted the stage `stage` key as authenticated.
+- `FS(tid, stage_target, stage_accepted, fslevel)`: Records that thread `tid` has during stage `stage_accepted` accepted the stage `stage_target` key as having forward secrecy level `fslevel` (in `wfs1`, `wfs2`, `fs`).
+- `Auth(tid, stage_target, stage_accepted)`: Records that thread `tid` has during stage `stage_accepted` accepted the stage `stage_target` key as authenticated.
 - `RevealedSessionKey(tid, stage)`: Records that the stage `stage` key in thread `tid` was revealed to the adversary.
 - `CorruptedLTK(P)`: Records that party `P`'s long-term secret key was revealed to the adversary.
 - `ProtocolMode(tid, mode)`: Records that thread `tid` is running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`).
