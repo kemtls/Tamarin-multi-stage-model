@@ -1,0 +1,84 @@
+lemma reachable_stage1:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '1') @ #t1
+    & Accept(tid_s, '1') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '1', sid) @ #t5
+    & SID(tid_s, '1', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage2:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '2') @ #t1
+    & Accept(tid_s, '2') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '2', sid) @ #t5
+    & SID(tid_s, '2', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage3:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '3') @ #t1
+    & Accept(tid_s, '3') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '3', sid) @ #t5
+    & SID(tid_s, '3', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage4:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '4') @ #t1
+    & Accept(tid_s, '4') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '4', sid) @ #t5
+    & SID(tid_s, '4', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage5:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '5') @ #t1
+    & Accept(tid_s, '5') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '5', sid) @ #t5
+    & SID(tid_s, '5', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+
+lemma reachable_stage6:
+  exists-trace
+  "
+    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6
+    .
+    Accept(tid_c, '6') @ #t1
+    & Accept(tid_s, '6') @ #t2
+    & Role(tid_c, 'client') @ #t3
+    & Role(tid_s, 'server') @ #t4
+    & SID(tid_c, '6', sid) @ #t5
+    & SID(tid_s, '6', sid) @ #t6
+    & not(tid_c = tid_s)
+  "
+

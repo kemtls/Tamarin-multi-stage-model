@@ -1,0 +1,36 @@
+lemma malicious_acceptance:
+  "
+    All tid stage #t_accept #t_auth
+    .
+    // the stage has accepted
+    Accept(tid, stage) @ #t_accept
+    // (1) the stage has been accepted as authenticated (which may be later than when the stage accepted)
+    & Auth(tid, stage) @ #t_auth
+    // (3) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
+    & not(
+      Ex S #tt1 #t_corrupted .
+      Peer(tid, S) @ #tt1
+      & CorruptedLTK(S) @ #t_corrupted
+      & #t_corrupted < #t_auth
+    )
+    ==>
+      // there exists a partner at this stage
+      (
+        Ex sid tid_other #tt1 #tt2 .
+        not(tid = tid_other)
+        & SID(tid, stage, sid) @ #tt1
+        & SID(tid_other, stage, sid) @ #tt2
+      )
+      // and it is unique (i.e., there are not three distinct instances with this sid)
+      & (
+        not(
+          Ex sid tid_1 tid_2 #tt0 #tt1 #tt2 .
+          not(tid = tid_1)
+          & not(tid = tid_2)
+          & not(tid_1 = tid_2)
+          & SID(tid, stage, sid) @ #tt0
+          & SID(tid_1, stage, sid) @ #tt1
+          & SID(tid_2, stage, sid) @ #tt2
+        )
+      )
+  "

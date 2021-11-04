@@ -1,0 +1,40 @@
+lemma match_prop1_stage1:
+  "
+    All tid_c tid_s sid_1 key_1_c key_1_s #t1 #t2 #t3 #t4 
+    .
+    not(tid_c = tid_s)
+    & SID(tid_c, '1', sid_1) @ #t1
+    & SID(tid_s, '1', sid_1) @ #t2
+    & SK(tid_c, '1', key_1_c) @ #t3
+    & SK(tid_s, '1', key_1_s) @ #t4
+    ==> key_1_c = key_1_s
+  "
+
+lemma match_prop2:
+  "
+    All tid_a tid_b stage sid role_a role_b #t1 #t2 #t3 #t4
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage, sid) @ #t1
+    & SID(tid_b, stage, sid) @ #t2
+    & Role(tid_a, role_a) @ #t3
+    & Role(tid_b, role_b) @ #t4
+    ==> not(role_a = role_b)
+  "
+
+lemma match_prop3:
+  "
+    All tid_a tid_b stage sid #t1 #t2
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage, sid) @ #t1
+    & SID(tid_b, stage, sid) @ #t2
+    ==> 
+    (
+      Ex cid_a cid_b #t3 #t4
+      .
+      CID(tid_a, stage, cid_a) @ #t3
+      & CID(tid_a, stage, cid_b) @ #t4
+      & cid_a = cid_b
+    )
+  "

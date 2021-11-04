@@ -1,0 +1,113 @@
+rule ServerAction1:
+  let
+    CLIENT_HELLO = <pk_e, r_c>
+    ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
+    ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
+    SERVER_HELLO = <ct_e, ~r_s>
+    ES = HKDFExtract('0', '0')
+    dES = HKDFExpand(ES, 'derived', '0')
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_1 = <'CHTS', CLIENT_HELLO, SERVER_HELLO>
+    SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    cid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    sid_2 = <'SHTS', CLIENT_HELLO, SERVER_HELLO>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    SERVER_CERTIFICATE = <pk_S>
+  in
+  [
+    Fr(~tid),
+    !Ltk($S, pk_S, sk_S),
+    In(CLIENT_HELLO),
+    Fr(~coins_e),
+    Fr(~r_s)
+  ]
+  --[
+    Owner(~tid, $S),
+    Peer(~tid, 'anonymous'),
+    Role(~tid, 'server'),
+    CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
+    CID(~tid, '2', cid_2), SID(~tid, '2', sid_2),
+    Accept(~tid, '1'),
+    Accept(~tid, '2'),
+    SK(~tid, '1', CHTS), FS(~tid, '1', 'wfs1'),
+    SK(~tid, '2', SHTS), FS(~tid, '2', 'wfs1')
+  ]->
+  [ 
+    Out(~tid),
+    Out(<SERVER_HELLO, SERVER_CERTIFICATE>),
+    ServerAction1State(~tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    !SessionKey(~tid, '1', CHTS),
+    !SessionKey(~tid, '2', SHTS)
+  ]
+
+rule ServerAction2Part1:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_KEM_CIPHERTEXT = <ct_S>
+    ss_S = KEM_s_Decaps(ct_S, sk_S)
+    AHS = HKDFExtract(dHS, ss_S)
+    CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_3 = <'CAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    SAHTS = HKDFExpand(AHS, 's_ahs_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    cid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    sid_4 = <'SAHTS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>
+    dAHS = HKDFExpand(AHS, 'derived', '0')
+  in
+  [
+    !Ltk($S, pk_S, sk_S),
+    ServerAction1State(tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    In(CLIENT_KEM_CIPHERTEXT)
+  ]
+  --[
+    CID(tid, '3', cid_3), SID(tid, '3', sid_3),
+    CID(tid, '4', cid_4), SID(tid, '4', sid_4),
+    Accept(tid, '3'),
+    Accept(tid, '4'),
+    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs1'),
+    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs1')
+  ]->
+  [
+    !SessionKey(tid, '3', CAHTS),
+    !SessionKey(tid, '4', SAHTS),
+    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+  ]
+
+rule ServerAction2Part2State:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    MS = HKDFExtract(dAHS, '0')
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    cid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+    sid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
+    SF = HMAC(fk_s, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>)
+    cid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+    sid_6 = <'SATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED, SERVER_FINISHED>
+  in
+  [
+    !Ltk($S, pk_S, sk_S),
+    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>),
+    In(CLIENT_FINISHED)
+  ]
+  --[
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    CID(tid, '6', cid_6), SID(tid, '6', sid_6),
+    Accept(tid, '5'),
+    Accept(tid, '6'),
+    SK(tid, '5', CATS), FS(tid, '5', 'wfs1'),
+    SK(tid, '6', SATS), FS(tid, '6', 'wfs1')
+  ]->
+  [
+    !SessionKey(tid, '5', CATS),
+    !SessionKey(tid, '6', SATS),
+    Out(SERVER_FINISHED)
+  ]
+

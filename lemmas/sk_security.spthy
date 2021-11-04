@@ -1,0 +1,70 @@
+lemma sk_security_stage1_client_wfs1:
+  "
+    All tid_c sid_1 key_1_c tid_s cid_1 #t1 #t2 #t3 #t4 #t5
+    .
+    // the instance is a client instance
+    Role(tid_c, 'client') @ #t1
+    // the client accepted a stage 1 key
+    & Accept(tid_c, '1') @ #t2
+    & SID(tid_c, '1', sid_1) @ #t3
+    & SK(tid_c, '1', key_1_c) @ #t3
+    // (1) the client's stage 1 key was never revealed
+    & not(Ex #t . RevealedSessionKey(tid_c, '1') @ #t)
+    // (2) the stage 1 key was never revealed at any other session with the same sid
+    & not(Ex tid_other #tt1 #tt2 .
+          not(tid_c = tid_other)
+          & SID(tid_other, '1', sid_1) @ #tt1
+          & RevealedSessionKey(tid_other, '1') @ #tt2
+    )
+    // (3) the exists a contributive partner at stage 1
+    // TODO: this is worded slightly more generally in the paper, though it collapses to the case below for KEMTLS
+    & CID(tid_c, '1', cid_1) @ #t4
+    & CID(tid_s, '1', cid_1) @ #t5
+    & not(tid_c = tid_s)
+    ==>
+      not(Ex #t . K(key_1_c) @ #t)
+  "
+
+lemma sk_security_stage6_client_fs:
+  "
+    All tid_c sid_6 key_6_c #t1 #t2 #t3 #t4
+    .
+    // the instance is a client instance
+    Role(tid_c, 'client') @ #t1
+    // the client accepted a stage 6 key
+    & Accept(tid_c, '6') @ #t2
+    & SID(tid_c, '6', sid_6) @ #t3
+    & SK(tid_c, '6', key_6_c) @ #t4
+    // (1) the client's stage 6 key was never revealed
+    & not(Ex #t . RevealedSessionKey(tid_c, '6') @ #t)
+    // (2) the stage 6 key was never revealed at any other session with the same sid
+    & not(Ex tid_other #tt1 #tt2 .
+          not(tid_c = tid_other)
+          & SID(tid_other, '6', sid_6) @ #tt1
+          & RevealedSessionKey(tid_other, '6') @ #tt2
+    )
+    // (5) and either
+    // TODO: this is worded slightly more generally in the paper, though it collapses to the case below for KEMTLS
+    & (
+      // (5.a) there exists a contributive partner at stage 6
+      (
+        Ex cid_6 tid_s #tt1 #tt2 .
+        CID(tid_c, '6', cid_6) @ #tt1
+        & CID(tid_s, '6', cid_6) @ #tt2
+        & not(tid_c = tid_s)
+      )
+      // or
+      |
+      // (5.b) the peer's long-term key was not corrupted before the owner's stage 6 accepted
+      (
+        not(
+          Ex S #tt1 #tt2 .
+          Peer(tid_c, S) @ #tt1
+          & CorruptedLTK(S) @ #tt2
+          & #tt2 < #tt1
+        )
+      )
+    )
+    ==>
+      not(Ex #t . K(key_6_c) @ #t)
+  "
