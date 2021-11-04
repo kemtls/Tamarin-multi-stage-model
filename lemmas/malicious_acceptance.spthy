@@ -8,9 +8,9 @@ lemma malicious_acceptance:
     & Auth(tid, stage) @ #t_auth
     // (3) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
     & not(
-      Ex S #tt1 #t_corrupted .
+      Ex S keytype #tt1 #t_corrupted .
       Peer(tid, S) @ #tt1
-      & CorruptedLTK(S) @ #t_corrupted
+      & CorruptedLTK(S, keytype) @ #t_corrupted
       & #t_corrupted < #t_auth
     )
     ==>

@@ -58,9 +58,9 @@ lemma sk_security_stage6_client_fs:
       // (5.b) the peer's long-term key was not corrupted before the owner's stage 6 accepted
       (
         not(
-          Ex S #tt1 #tt2 .
+          Ex S keytype #tt1 #tt2 .
           Peer(tid_c, S) @ #tt1
-          & CorruptedLTK(S) @ #tt2
+          & CorruptedLTK(S, keytype) @ #tt2
           & #tt2 < #tt1
         )
       )

@@ -13,10 +13,10 @@ rule ORevealSessionKey:
 // Oracle for revealing long-term keys
 rule OCorruptLTK:
   [
-    !Ltk($P, pk, sk)
+    !Ltk($P, pk, sk, type)
   ]
   --[
-    CorruptedLTK($P)
+    CorruptedLTK($P, type)
   ]->
   [
     Out(sk)

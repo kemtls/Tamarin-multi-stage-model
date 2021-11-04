@@ -56,7 +56,7 @@ rule KEMTLS_SAUTH_ClientAction2:
   in
   [ 
     State(tid, 'KEMTLS_SAUTH_OR_MUTUAL', 'ClientAction1', <sk_e, dES>, <CLIENT_HELLO>), 
-    !Pk($S, pk_S),
+    !Pk($S, pk_S, 'KEM_s'),
     In(<SERVER_HELLO, SERVER_CERTIFICATE>), 
     Fr(~coins_S)
   ]
@@ -100,7 +100,7 @@ rule KEMTLS_SAUTH_ClientAction3:
     sid_6 = <'SATS', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT>
   in
   [
-    !Pk($S, pk_S),
+    !Pk($S, pk_S, 'KEM_s'),
     State(tid, 'KEMTLS_SAUTH', 'ClientAction2', <MS, fk_s>, M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT),
     In(<SERVER_FINISHED>)
   ]

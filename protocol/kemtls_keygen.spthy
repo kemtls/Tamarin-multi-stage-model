@@ -1,4 +1,4 @@
-rule KEMTLS_KeyGen:
+rule KEMTLS_KEM_s_KeyGen:
   let 
     pk_P = KEM_s_PK(~sk_P)
   in
@@ -6,11 +6,27 @@ rule KEMTLS_KeyGen:
     Fr(~sk_P)
   ]
   --[
-    RegisteredLTK($P, pk_P)
+    RegisteredLTK($P, pk_P, 'KEM_s')
   ]->
   [
-    !Ltk($P, pk_P, ~sk_P),
-    !Pk($P, pk_P),
+    !Ltk($P, pk_P, ~sk_P, 'KEM_s'),
+    !Pk($P, pk_P, 'KEM_s'),
     Out(pk_P)
   ]
+
+rule KEMTLS_KEM_c_KeyGen:
+let 
+  pk_P = KEM_c_PK(~sk_P)
+in
+[
+  Fr(~sk_P)
+]
+--[
+  RegisteredLTK($P, pk_P, 'KEM_c')
+]->
+[
+  !Ltk($P, pk_P, ~sk_P, 'KEM_c'),
+  !Pk($P, pk_P, 'KEM_c'),
+  Out(pk_P)
+]
 

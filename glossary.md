@@ -33,7 +33,13 @@ Accompanied by equational theory on correctness of decapsulation.
 
 All variants of KEMTLS can use:
 
-- `KEMTLS_KeyGen`:
+- `KEMTLS_KEM_s_KeyGen`:
+	- generates a new `KEM_s` key pair `(pk, sk)`
+	- binds a public key `pk` to a new party name `$P`
+	- outputs the public key
+
+- `KEMTLS_KEM_c_KeyGen`:
+	- generates a new `KEM_c` key pair `(pk, sk)`
 	- binds a public key `pk` to a new party name `$P`
 	- outputs the public key
 
@@ -60,7 +66,7 @@ All variants of KEMTLS can use:
 
 For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 
-- `Registered(P, pk)`: Records that a public key `pk` was registered for party `P`.
+- `Registered(P, pk, type)`: Records that a public key `pk` of type `type` (either `KEM_c` or `KEM_s`) was registered for party `P`.
 - `Owner(tid, P)` or `Owner(tid, 'anonymous')`: Records that the owner of thread `tid` is party `P` or is anonymous.
 - `Role(tid, 'client')` or `Role(tid, 'server')`: Records that the role of the party in thread `tid` is a client or a server.
 - `CID(tid, stage, cid)`: Records that the contributive identifier of stage `stage` for thread `tid` is `cid`.
@@ -76,8 +82,8 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 
 ## State facts
 
-- `!Ltk(P, pk, sk)`: Records that party `P`'s long-term public key is `pk` and the corresponding secret key is `sk`.
-- `!Pk(P, pk)`: Records that party `P`'s long-term public key is `pk`.
+- `!Ltk(P, pk, sk, type)`: Records that party `P`'s long-term public key of type `type` is `pk` and the corresponding secret key is `sk`.
+- `!Pk(P, pk, type)`: Records that party `P`'s long-term public key of type `type` is `pk`.
 - `!SessionKey(tid, stage, key)`: Records that the stage `stage` session key for thread `tid` is `key`.
 - `State(tid, mode, action, vars, transcript`: Records state for thread `tid` to be consumed by subsequent protocol actions. 
 	- `mode` is the protocol mode the state is intended for.
@@ -88,4 +94,4 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 ## Oracles
 
 - `ORevealSessionKey`: Reveals a session key recorded with `!SessionKey(tid, stage, key)`. Records this using a `RevealedSessionKey` action fact.
-- `OCorruptLTK`: Reveals the long-term secret key recorded with `!Ltk(P, pk, sk)`. Records this using a `Corrupted` action fact.
+- `OCorruptLTK`: Reveals the long-term secret key recorded with `!Ltk(P, pk, sk, type)`. Records this using a `Corrupted` action fact.
