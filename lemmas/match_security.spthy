@@ -5,8 +5,8 @@ lemma match_prop0: // extra property: they agree on protocol mode
     not(tid_a = tid_b)
     & SID(tid_a, stage, sid) @ #t1
     & SID(tid_b, stage, sid) @ #t2
-    & ProtocolMode(tid_a, stage, mode_a) @ #t3
-    & ProtocolMode(tid_b, stage, mode_b) @ #t4
+    & ProtocolMode(tid_a, mode_a) @ #t3
+    & ProtocolMode(tid_b, mode_b) @ #t4
     ==> (
       (mode_a = mode_b)
     )
