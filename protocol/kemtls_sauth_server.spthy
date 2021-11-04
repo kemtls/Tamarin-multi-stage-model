@@ -37,7 +37,7 @@ rule KEMTLS_SAUTH_ServerAction1:
   [ 
     Out(~tid),
     Out(<SERVER_HELLO, SERVER_CERTIFICATE>),
-    ServerAction1State(~tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    State(~tid, 'KEMTLS_SAUTH', 'ServerAction1', <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
     !SessionKey(~tid, '1', CHTS),
     !SessionKey(~tid, '2', SHTS)
   ]
@@ -58,7 +58,7 @@ rule KEMTLS_SAUTH_ServerAction2Part1:
   in
   [
     !Ltk($S, pk_S, sk_S),
-    ServerAction1State(tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
+    State(tid, 'KEMTLS_SAUTH', 'ServerAction1', <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
     In(<CLIENT_KEM_CIPHERTEXT>)
   ]
   --[
@@ -72,7 +72,7 @@ rule KEMTLS_SAUTH_ServerAction2Part1:
   [
     !SessionKey(tid, '3', CAHTS),
     !SessionKey(tid, '4', SAHTS),
-    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
+    State(tid, 'KEMTLS_SAUTH', 'ServerAction2Part1', <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
   ]
 
 rule KEMTLS_SAUTH_ServerAction2Part2:
@@ -94,7 +94,7 @@ rule KEMTLS_SAUTH_ServerAction2Part2:
   in
   [
     !Ltk($S, pk_S, sk_S),
-    ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>),
+    State(tid, 'KEMTLS_SAUTH', 'ServerAction2Part1', <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>),
     In(<CLIENT_FINISHED>)
   ]
   --[

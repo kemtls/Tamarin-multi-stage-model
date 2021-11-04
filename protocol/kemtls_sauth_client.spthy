@@ -20,7 +20,7 @@ rule KEMTLS_SAUTH_ClientAction1:
   [
     Out(~tid),
     Out(<CLIENT_HELLO>),
-    ClientAction1State(~tid, <~sk_e, dES>, <CLIENT_HELLO>)
+    State(~tid, 'KEMTLS_SAUTH', 'ClientAction1', <~sk_e, dES>, <CLIENT_HELLO>)
   ]
 
 rule KEMTLS_SAUTH_ClientAction2:
@@ -57,7 +57,7 @@ rule KEMTLS_SAUTH_ClientAction2:
     sid_5 = <'CATS', CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>
   in
   [ 
-    ClientAction1State(tid, <sk_e, dES>, <CLIENT_HELLO>), 
+    State(tid, 'KEMTLS_SAUTH', 'ClientAction1', <sk_e, dES>, <CLIENT_HELLO>), 
     !Pk($S, pk_S),
     In(<SERVER_HELLO, SERVER_CERTIFICATE>), 
     Fr(~coins_S)
@@ -87,7 +87,7 @@ rule KEMTLS_SAUTH_ClientAction2:
     !SessionKey(tid, '4', SAHTS),
     !SessionKey(tid, '5', CATS),
     Out(<CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
-    ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
+    State(tid, 'KEMTLS_SAUTH', 'ClientAction2', <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
   ]
 
 rule KEMTLS_SAUTH_ClientAction3:
@@ -101,7 +101,7 @@ rule KEMTLS_SAUTH_ClientAction3:
   in
   [
     !Pk($S, pk_S),
-    ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
+    State(tid, 'KEMTLS_SAUTH', 'ClientAction2', <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
     In(<SERVER_FINISHED>)
   ]
   --[

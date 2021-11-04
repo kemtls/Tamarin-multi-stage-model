@@ -78,7 +78,11 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `!Ltk(P, pk, sk)`: Records that party `P`'s long-term public key is `pk` and the corresponding secret key is `sk`.
 - `!Pk(P, pk)`: Records that party `P`'s long-term public key is `pk`.
 - `!SessionKey(tid, stage, key)`: Records that the stage `stage` session key for thread `tid` is `key`.
-- `*State`: Records ephemeral thread state to be consumed by subsequent protocol actions. All `*State` facts have the form `(tid, protocol_state, transcript)` where `tid` is a thread identifier, `protocol_state` is a tuple of variables (`<var1, var2, etc>`), and `transcript` is a tuple of protocol messages.
+- `State(tid, mode, action, vars, transcript`: Records state for thread `tid` to be consumed by subsequent protocol actions. 
+	- `mode` is the protocol mode the state is intended for (currently just `KEMTLS_SAUTH`).
+	- `action` is the name of the protocol action that output this state (e.g., `ClientAction1`, `ClientAction2`, etc.)
+	- `vars` is a tuple of variables (`<var1, var2, etc>`).
+	- `transcript` is a tuple of protocol messages.
 
 ## Oracles
 
