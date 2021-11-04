@@ -1,20 +1,3 @@
-// Oracle for generating a new honest server public key
-rule ORegisterLTK:
-  let 
-    pk_B = KEM_s_PK(~sk_B)
-  in
-  [
-    Fr(~sk_B)
-  ]
-  --[
-    RegisteredLTK($B, pk_B)
-  ]->
-  [
-    !Ltk($B, pk_B, ~sk_B),
-    !Pk($B, pk_B),
-    Out(pk_B)
-  ]
-
 // Oracle for revealing session keys
 rule ORevealSessionKey:
   [

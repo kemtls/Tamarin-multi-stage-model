@@ -1,0 +1,16 @@
+rule RegisterLTK:
+  let 
+    pk_P = KEM_s_PK(~sk_P)
+  in
+  [
+    Fr(~sk_P)
+  ]
+  --[
+    RegisteredLTK($P, pk_P)
+  ]->
+  [
+    !Ltk($P, pk_P, ~sk_P),
+    !Pk($P, pk_P),
+    Out(pk_P)
+  ]
+
