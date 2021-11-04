@@ -1,0 +1,128 @@
+rule KEMTLS_MUTUAL_ServerAction1:
+  let
+    CLIENT_HELLO = <pk_e, r_c>
+    ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
+    ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
+    SERVER_HELLO = <ct_e, ~r_s>
+    ES = HKDFExtract('0', '0')
+    dES = HKDFExpand(ES, 'derived', '0')
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', M_KEMTLS_MUTUAL_STAGE1_TRANSCRIPT)
+    cid_1 = <'CHTS', M_KEMTLS_MUTUAL_STAGE1_TRANSCRIPT>
+    sid_1 = <'CHTS', M_KEMTLS_MUTUAL_STAGE1_TRANSCRIPT>
+    SHTS = HKDFExpand(HS, 's_hs_traffic', M_KEMTLS_MUTUAL_STAGE2_TRANSCRIPT)
+    cid_2 = <'SHTS', M_KEMTLS_MUTUAL_STAGE2_TRANSCRIPT>
+    sid_2 = <'SHTS', M_KEMTLS_MUTUAL_STAGE2_TRANSCRIPT>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    CERTIFICATE_REQUEST = <'certificate_request'>
+    SERVER_CERTIFICATE = <pk_S>
+  in
+  [
+    Fr(~tid),
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    In(<CLIENT_HELLO>),
+    Fr(~coins_e),
+    Fr(~r_s)
+  ]
+  --[
+    ProtocolMode(~tid, 'KEMTLS_MUTUAL'),
+    Owner(~tid, $S),
+    Role(~tid, 'server'),
+    CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
+    CID(~tid, '2', cid_2), SID(~tid, '2', sid_2),
+    Accept(~tid, '1'),
+    Accept(~tid, '2'),
+    SK(~tid, '1', CHTS), FS(~tid, '1', 'wfs1'),
+    SK(~tid, '2', SHTS), FS(~tid, '2', 'wfs1')
+  ]->
+  [ 
+    Out(~tid),
+    Out(<SERVER_HELLO, SERVER_CERTIFICATE>),
+    State(~tid, 'KEMTLS_MUTUAL', 'ServerAction1', <dHS>, <CLIENT_HELLO, SERVER_HELLO, CERTIFICATE_REQUEST, SERVER_CERTIFICATE>),
+    !SessionKey(~tid, '1', CHTS),
+    !SessionKey(~tid, '2', SHTS)
+  ]
+
+rule KEMTLS_MUTUAL_ServerAction2:
+  let
+    CLIENT_KEM_CIPHERTEXT = <ct_S>
+    ss_S = KEM_s_Decaps(ct_S, sk_S)
+    AHS = HKDFExtract(dHS, ss_S)
+    CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_MUTUAL_STAGE3_TRANSCRIPT)
+    cid_3 = <'CAHTS', M_KEMTLS_MUTUAL_STAGE3_TRANSCRIPT>
+    sid_3 = <'CAHTS', M_KEMTLS_MUTUAL_STAGE3_TRANSCRIPT>
+    SAHTS = HKDFExpand(AHS, 's_ahs_traffic', M_KEMTLS_MUTUAL_STAGE4_TRANSCRIPT)
+    cid_4 = <'SAHTS', M_KEMTLS_MUTUAL_STAGE4_TRANSCRIPT>
+    sid_4 = <'SAHTS', M_KEMTLS_MUTUAL_STAGE4_TRANSCRIPT>
+    dAHS = HKDFExpand(AHS, 'derived', '0')
+    CLIENT_CERTIFICATE = <pk_C>
+    ct_C = KEM_c_Encaps_ct(pk_C, ~coins_C)
+    ss_C = KEM_c_Encaps_ss(pk_C, ~coins_C)
+    SERVER_KEM_CIPHERTEXT = <ct_C>
+    MS = HKDFExtract(dAHS, ss_C)
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+  in
+  [
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    !Pk($C, pk_C, 'KEM_c'),
+    Fr(~coins_C),
+    State(tid, 'KEMTLS_MUTUAL', 'ServerAction1', <dHS>, <CLIENT_HELLO, SERVER_HELLO, CERTIFICATE_REQUEST, SERVER_CERTIFICATE>),
+    In(<CLIENT_KEM_CIPHERTEXT, CLIENT_CERTIFICATE>)
+  ]
+  --[
+    Peer(tid, $C),
+    CID(tid, '3', cid_3), SID(tid, '3', sid_3),
+    CID(tid, '4', cid_4), SID(tid, '4', sid_4),
+    Accept(tid, '3'),
+    Accept(tid, '4'),
+    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs2'),
+    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs2')
+  ]->
+  [
+    !SessionKey(tid, '3', CAHTS),
+    !SessionKey(tid, '4', SAHTS),
+    State(tid, 'KEMTLS_MUTUAL', 'ServerAction2', <MS, fk_c, fk_s>, M_KEMTLS_MUTUAL_CF_TRANSCRIPT),
+    Out(<SERVER_KEM_CIPHERTEXT>)
+  ]
+
+rule KEMTLS_MUTUAL_ServerAction3:
+  let
+    CF = HMAC(fk_c, M_KEMTLS_MUTUAL_CF_TRANSCRIPT)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', M_KEMTLS_MUTUAL_STAGE5_TRANSCRIPT)
+    cid_5 = <'CATS', M_KEMTLS_MUTUAL_STAGE5_TRANSCRIPT>
+    sid_5 = <'CATS', M_KEMTLS_MUTUAL_STAGE5_TRANSCRIPT>
+    SF = HMAC(fk_s, M_KEMTLS_MUTUAL_SF_TRANSCRIPT)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', M_KEMTLS_MUTUAL_STAGE6_TRANSCRIPT)
+    cid_6 = <'SATS', M_KEMTLS_MUTUAL_STAGE6_TRANSCRIPT>
+    sid_6 = <'SATS', M_KEMTLS_MUTUAL_STAGE6_TRANSCRIPT>
+  in
+  [
+    State(tid, 'KEMTLS_MUTUAL', 'ServerAction2', <MS, fk_c, fk_s>, M_KEMTLS_MUTUAL_CF_TRANSCRIPT),
+    In(<CLIENT_FINISHED>)
+  ]
+  --[
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    CID(tid, '6', cid_6), SID(tid, '6', sid_6),
+    Accept(tid, '5'),
+    Accept(tid, '6'),
+    SK(tid, '5', CATS), FS(tid, '5', 'fs'),
+    SK(tid, '6', SATS), FS(tid, '6', 'fs'),
+    FS(tid, '1', 'fs'),
+    FS(tid, '2', 'fs'),
+    FS(tid, '3', 'fs'),
+    FS(tid, '4', 'fs'),
+    Auth(tid, '1'),
+    Auth(tid, '2'),
+    Auth(tid, '3'),
+    Auth(tid, '4'),
+    Auth(tid, '5'),
+    Auth(tid, '6')
+  ]->
+  [
+    !SessionKey(tid, '5', CATS),
+    !SessionKey(tid, '6', SATS),
+    Out(<SERVER_FINISHED>)
+  ]

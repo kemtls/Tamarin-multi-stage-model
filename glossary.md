@@ -20,6 +20,15 @@ Accompanied by equational theory on correctness of decapsulation.
 
 Accompanied by equational theory on correctness of decapsulation.
 
+#### `KEM_c`: KEM for client authentication
+
+- `KEM_c_PK(sk) -> pk`
+- `KEM_c_Encaps_ct(pk, coins) -> ct`
+- `KEM_c_Encaps_ss(pk, coins) -> ss`
+- `KEM_c_Decaps(ct, sk) -> ss`
+
+Accompanied by equational theory on correctness of decapsulation.
+
 #### HKDF
 
 - `HKDFExtract(ikm, salt) -> output`
@@ -48,18 +57,42 @@ All variants of KEMTLS can use:
 - `KEMTLS_SAUTH_ClientAction1`:
 	- outputs `<CLIENT_HELLO>`
 - `KEMTLS_SAUTH_ServerAction1`:
-	- outputs `<SERVER_HELLO, SERVER_CERTIFICATE>`
 	- accepts stage 1 and 2 keys
+	- outputs `<SERVER_HELLO, SERVER_CERTIFICATE>`
 - `KEMTLS_SAUTH_ClientAction2`:
-	- outputs `<CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>`
 	- accepts stage 1-5 keys
+	- outputs `<CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>`
 - `KEMTLS_SAUTH_ServerAction2Part1`:
 	- inputs `<CLIENT_KEM_CIPHERTEXT>`
 	- accepts stage 3 and 4 keys
 - `KEMTLS_SAUTH_ServerAction2Part2`:
+	- part 1 and part 2 are separated so that the stage 3 and 4 keys can be accepted even if the MAC check fails
 	- inputs `<CLIENT_FINISHED>`
-	- accepts stage 5 and 6 keys, outputs `<SERVER_FINISHED>`
+	- accepts stage 5 and 6 keys
+	- outputs `<SERVER_FINISHED>`
 - `KEMTLS_SAUTH_ClientAction3`: 
+	- accepts stage 6 key
+
+### `KEMTLS_MUTUAL`: KEMTLS in mutual authentication mode
+
+- `KEMTLS_MUTUAL_ClientAction1`: same as `KEMTLS_SAUTH_ClientAction1`
+	- outputs `<CLIENT_HELLO>`
+- `KEMTLS_MUTUAL_ServerAction1`:
+	- accepts stage 1 and 2 keys
+	- outputs `<SERVER_HELLO, CERTIFICATE_REQUEST, SERVER_CERTIFICATE>`
+- `KEMTLS_MUTUAL_ClientAction2`:
+	- accepts stage 1-4 keys
+	- outputs `<CLIENT_KEM_CIPHERTEXT, CLIENT_CERTIFICATE>`
+- `KEMTLS_MUTUAL_ServerAction2`:
+	- accepts stage 3 and 4 keys
+	- outputs `<SERVER_KEM_CIPHERTEXT>`
+- `KEMTLS_MUTUAL_ClientAction3`:
+	- accepts stage 5 key
+	- outputs `<CLIENT_FINISHED>`
+- `KEMTLS_MUTUAL_ServerAction3`:
+	- accepts stage 5 and 6 keys
+	- outputs `<SERVER_FINISHED>`
+- `KEMTLS_MUTUAL_ClientAction3`: 
 	- accepts stage 6 key
 
 ## Action facts
@@ -85,7 +118,7 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `!Ltk(P, pk, sk, type)`: Records that party `P`'s long-term public key of type `type` is `pk` and the corresponding secret key is `sk`.
 - `!Pk(P, pk, type)`: Records that party `P`'s long-term public key of type `type` is `pk`.
 - `!SessionKey(tid, stage, key)`: Records that the stage `stage` session key for thread `tid` is `key`.
-- `State(tid, mode, action, vars, transcript`: Records state for thread `tid` to be consumed by subsequent protocol actions. 
+- `State(tid, mode, action, vars, transcript)`: Records state for thread `tid` to be consumed by subsequent protocol actions. 
 	- `mode` is the protocol mode the state is intended for.
 	- `action` is the name of the protocol action that output this state (e.g., `ClientAction1`, `ClientAction2`, etc.)
 	- `vars` is a tuple of variables (`<var1, var2, etc>`).
