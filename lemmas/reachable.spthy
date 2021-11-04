@@ -1,24 +1,55 @@
-define(<!M_LEMMA_REACHABLE!>,<!
-lemma reachable_$1_stage$2:
+dnl M_LEMMA_REACHABLE_SAUTH
+dnl arguments:
+dnl $1: protocol mode (KEMTLS_MUTUAL, KEMTLS_SAUTH)
+dnl $2: stage number (1, 2, 3, 4, 5, 6)
+dnl $3: does the client expect server authentication at this stage? (⊤, ⊥)
+dnl $4: what level of FS does the client expect at this stage?
+dnl $5: what level of FS does the server expect at this stage?
+define(<!M_LEMMA_REACHABLE_SAUTH!>,<!
+lemma reachable_$1_sauth_stage$2_c$4_s$5:
   exists-trace
   "
-    Ex tid_c tid_s sid #t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8
+    ∃ tid_c tid_s S sid #t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8 #t9 #t10 #t11 #t12 #t13 #t14 #t15
     .
-    Accept(tid_c, '$2') @ #t1
-    & Accept(tid_s, '$2') @ #t2
-    & Role(tid_c, 'client') @ #t3
-    & Role(tid_s, 'server') @ #t4
-    & SID(tid_c, '$2', sid) @ #t5
-    & SID(tid_s, '$2', sid) @ #t6
-    & ProtocolMode(tid_c, '$1') @ #t7
-    & ProtocolMode(tid_s, '$1') @ #t8
-    & not(tid_c = tid_s)
+    not(tid_c = tid_s)                    // distinct threads
+    ∧ ProtocolMode(tid_c, '$1') @ #t1     // client is running in protocol mode $1
+    ∧ ProtocolMode(tid_s, '$1') @ #t2     // server is running in protocol mode $1
+    ∧ Owner(tid_c, 'anonymous') @ #t3     // the owner of the client thread is anonymous
+    ∧ Owner(tid_s, S) @ #t4               // the owner of the server thread
+    ∧ (                                   // either
+      ($3 ∧ (Ex #tt1 . Peer(tid_c, S) @ #tt1)) // the client expects server authentication and the client has the right peer
+      ∨                                   // or
+      ¬$3                                 // the client does not expect server authentication
+    )
+    ∧ Peer(tid_s, 'anonymous') @ #t5      // the server has the right peer
+    ∧ Role(tid_c, 'client') @ #t6         // the client has the right role
+    ∧ Role(tid_s, 'server') @ #t7         // the server has the right role
+    ∧ Accept(tid_c, '$2') @ #t8           // the client accepted in stage $2
+    ∧ Accept(tid_s, '$2') @ #t9           // the client accepted in stage $2
+    ∧ CID(tid_c, '$2', sid) @ #t10        // the client and server have the same CID as the SID for stage $2
+    ∧ CID(tid_s, '$2', sid) @ #t11
+    ∧ SID(tid_c, '$2', sid) @ #t12
+    ∧ SID(tid_s, '$2', sid) @ #t13
+    ∧ (                                   // either
+      ($3 ∧ (Ex #tt1 . Auth(tid_c, '$2') @ #tt1)) // the client expects server authentication and the client has accepted stage $2 as authenticated
+      ∨                                   // or
+      ¬$3                                 // the client does not expect server authentication
+    )
+    ∧ (¬(Ex #tt1 . Auth(tid_s, '$2') @ #tt1)) // the server has not accepted stage $2 as authenticated
+    // server not authenticated the client
+    ∧ FS(tid_c, '$2', '$4') @ #t14        // the client has the right forward secrecy level in stage $2
+    ∧ FS(tid_s, '$2', '$5') @ #t15        // the server has the right forward secrecy level in stage $2
   "
 !>)
 
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 2)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 3)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 4)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 6)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 1, ⊥, wfs1, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 1, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 2, ⊥, wfs1, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 2, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 3, ⊥, wfs2, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 3, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 4, ⊥, wfs2, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 4, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 5, ⊥, wfs2, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 5, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE_SAUTH(KEMTLS_SAUTH, 6, ⊥, fs, wfs1)
