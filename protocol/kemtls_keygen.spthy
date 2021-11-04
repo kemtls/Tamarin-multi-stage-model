@@ -1,4 +1,4 @@
-rule RegisterLTK:
+rule KEMTLS_KeyGen:
   let 
     pk_P = KEM_s_PK(~sk_P)
   in

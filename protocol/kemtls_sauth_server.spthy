@@ -1,4 +1,4 @@
-rule ServerAction1:
+rule KEMTLS_SAUTH_ServerAction1:
   let
     CLIENT_HELLO = <pk_e, r_c>
     ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
@@ -19,7 +19,7 @@ rule ServerAction1:
   [
     Fr(~tid),
     !Ltk($S, pk_S, sk_S),
-    In(CLIENT_HELLO),
+    In(<CLIENT_HELLO>),
     Fr(~coins_e),
     Fr(~r_s)
   ]
@@ -42,7 +42,7 @@ rule ServerAction1:
     !SessionKey(~tid, '2', SHTS)
   ]
 
-rule ServerAction2Part1:
+rule KEMTLS_SAUTH_ServerAction2Part1:
   let
     SERVER_CERTIFICATE = <pk_S>
     CLIENT_KEM_CIPHERTEXT = <ct_S>
@@ -59,7 +59,7 @@ rule ServerAction2Part1:
   [
     !Ltk($S, pk_S, sk_S),
     ServerAction1State(tid, <dHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE>),
-    In(CLIENT_KEM_CIPHERTEXT)
+    In(<CLIENT_KEM_CIPHERTEXT>)
   ]
   --[
     CID(tid, '3', cid_3), SID(tid, '3', sid_3),
@@ -75,7 +75,7 @@ rule ServerAction2Part1:
     ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>)
   ]
 
-rule ServerAction2Part2State:
+rule KEMTLS_SAUTH_ServerAction2Part2:
   let
     SERVER_CERTIFICATE = <pk_S>
     MS = HKDFExtract(dAHS, '0')
@@ -95,7 +95,7 @@ rule ServerAction2Part2State:
   [
     !Ltk($S, pk_S, sk_S),
     ServerAction2Part1State(tid, <dAHS>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT>),
-    In(CLIENT_FINISHED)
+    In(<CLIENT_FINISHED>)
   ]
   --[
     CID(tid, '5', cid_5), SID(tid, '5', sid_5),
@@ -108,6 +108,6 @@ rule ServerAction2Part2State:
   [
     !SessionKey(tid, '5', CATS),
     !SessionKey(tid, '6', SATS),
-    Out(SERVER_FINISHED)
+    Out(<SERVER_FINISHED>)
   ]
 

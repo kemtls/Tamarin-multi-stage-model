@@ -1,5 +1,5 @@
 // The client's first protocol action, generating an outgoing ephemeral KEM public key
-rule ClientAction1:
+rule KEMTLS_SAUTH_ClientAction1:
   let
     pk_e = KEM_e_PK(~sk_e)
     CLIENT_HELLO = <pk_e, ~r_c>
@@ -19,11 +19,11 @@ rule ClientAction1:
   ]->
   [
     Out(~tid),
-    Out(CLIENT_HELLO),
+    Out(<CLIENT_HELLO>),
     ClientAction1State(~tid, <~sk_e, dES>, <CLIENT_HELLO>)
   ]
 
-rule ClientAction2:
+rule KEMTLS_SAUTH_ClientAction2:
   let
     SERVER_HELLO = <ct_e, r_s>
     ss_e = KEM_e_Decaps(ct_e, sk_e)
@@ -90,7 +90,7 @@ rule ClientAction2:
     ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
   ]
 
-rule ClientAction3:
+rule KEMTLS_SAUTH_ClientAction3:
   let
     SERVER_CERTIFICATE = <pk_S>
     SF = HMAC(fk_s, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>)
@@ -102,7 +102,7 @@ rule ClientAction3:
   [
     !Pk($S, pk_S),
     ClientAction2State(tid, <MS, fk_s>, <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_FINISHED>),
-    In(SERVER_FINISHED)
+    In(<SERVER_FINISHED>)
   ]
   --[
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),

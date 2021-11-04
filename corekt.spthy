@@ -4,8 +4,8 @@ begin
 include(protocol/primitives.spthy)
 
 include(protocol/kemtls_keygen.spthy)
-include(protocol/kemtls_client.spthy)
-include(protocol/kemtls_server.spthy)
+include(protocol/kemtls_sauth_client.spthy)
+include(protocol/kemtls_sauth_server.spthy)
 
 include(model/oracles.spthy)
 
