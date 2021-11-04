@@ -72,6 +72,7 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `Auth(tid, stage)`: Records that thread `tid` has accepted the stage `stage` key as authenticated.
 - `RevealedSessionKey(tid, stage)`: Records that the stage `stage` key in thread `tid` was revealed to the adversary.
 - `CorruptedLTK(P)`: Records that party `P`'s long-term secret key was revealed to the adversary.
+- `ProtocolMode(tid, mode)`: Records that thread `tid` is running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`).
 
 ## State facts
 
@@ -79,7 +80,7 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `!Pk(P, pk)`: Records that party `P`'s long-term public key is `pk`.
 - `!SessionKey(tid, stage, key)`: Records that the stage `stage` session key for thread `tid` is `key`.
 - `State(tid, mode, action, vars, transcript`: Records state for thread `tid` to be consumed by subsequent protocol actions. 
-	- `mode` is the protocol mode the state is intended for (currently just `KEMTLS_SAUTH`).
+	- `mode` is the protocol mode the state is intended for.
 	- `action` is the name of the protocol action that output this state (e.g., `ClientAction1`, `ClientAction2`, etc.)
 	- `vars` is a tuple of variables (`<var1, var2, etc>`).
 	- `transcript` is a tuple of protocol messages.

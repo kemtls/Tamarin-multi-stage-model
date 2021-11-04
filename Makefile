@@ -8,3 +8,6 @@ well-formed: preprocess
 
 prove: preprocess
 	tamarin-prover $(if $(PROVE), --prove=$(PROVE), --prove) generated_corekt.spthy
+
+clean:
+	$(RM) -f generated_* */generated_*
