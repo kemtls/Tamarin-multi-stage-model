@@ -54,7 +54,7 @@ All variants of KEMTLS can use:
 
 ### `KEMTLS_SAUTH`: KEMTLS in server-only authentication mode
 
-- `KEMTLS_SAUTH_ClientAction1`:
+- `KEMTLS_SAUTH_OR_MUTUAL_ClientAction1`:
 	- outputs `<CLIENT_HELLO>`
 - `KEMTLS_SAUTH_ServerAction1`:
 	- accepts stage 1 and 2 keys
@@ -75,7 +75,7 @@ All variants of KEMTLS can use:
 
 ### `KEMTLS_MUTUAL`: KEMTLS in mutual authentication mode
 
-- `KEMTLS_MUTUAL_ClientAction1`: same as `KEMTLS_SAUTH_ClientAction1`
+- `KEMTLS_SAUTH_OR_MUTUAL_ClientAction1`:
 	- outputs `<CLIENT_HELLO>`
 - `KEMTLS_MUTUAL_ServerAction1`:
 	- accepts stage 1 and 2 keys
