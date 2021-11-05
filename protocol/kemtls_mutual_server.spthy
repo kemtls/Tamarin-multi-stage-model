@@ -127,8 +127,7 @@ rule KEMTLS_MUTUAL_ServerAction3:
     Auth(tid, '3', '6'),
     Auth(tid, '4', '6'),
     Auth(tid, '5', '5'),
-    Auth(tid, '5', '6'),
-    Auth(tid, '6', '6')
+    Auth(tid, '5', '6')
   ]->
   [
     !SessionKey(tid, '5', CATS),
