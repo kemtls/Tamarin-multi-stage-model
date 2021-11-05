@@ -64,8 +64,8 @@ rule KEMTLS_SAUTH_ServerAction2Part1:
     In(<CLIENT_KEM_CIPHERTEXT>)
   ]
   --[
-    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH'), ProtocolMode(tid, '3', '6', 'KEMTLS_SAUTH'),
-    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH'), ProtocolMode(tid, '4', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_SAUTH'),
     CID(tid, '3', cid_3), SID(tid, '3', sid_3),
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),

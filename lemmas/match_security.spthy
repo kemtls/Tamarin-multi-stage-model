@@ -1,12 +1,14 @@
 lemma match_prop0: // extra property: they agree on protocol mode
   "
-    All tid_a tid_b stage sid mode_a mode_b #t1 #t2 #t3 #t4
+    All tid_a tid_b stage_targeted stage_accepted sid mode_a mode_b #t1 #t2 #t3 #t4 #t5 #t6
     .
     not(tid_a = tid_b)
-    & SID(tid_a, stage, sid) @ #t1
-    & SID(tid_b, stage, sid) @ #t2
-    & ProtocolMode(tid_a, mode_a) @ #t3
-    & ProtocolMode(tid_b, mode_b) @ #t4
+    & Accept(tid_a, stage_accepted) @ #t1
+    & Accept(tid_b, stage_accepted) @ #t2
+    & SID(tid_a, stage_accepted, sid) @ #t3
+    & SID(tid_b, stage_accepted, sid) @ #t4
+    & ProtocolMode(tid_a, stage_targeted, stage_accepted, mode_a) @ #t5
+    & ProtocolMode(tid_b, stage_targeted, stage_accepted, mode_b) @ #t6
     ==> (
       (mode_a = mode_b)
     )

@@ -38,8 +38,8 @@ rule KEMTLS_MUTUAL_ClientAction2:
   --[
     ProtocolMode(tid, '1', '1', 'KEMTLS_SAUTH_OR_MUTUAL'),
     ProtocolMode(tid, '2', '2', 'KEMTLS_SAUTH_OR_MUTUAL'),
-    ProtocolMode(tid, '3', '3', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
-    ProtocolMode(tid, '4', '4', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
     Owner(tid, $C),
     CID(tid, '1', cid_1), SID(tid, '1', sid_1),
     CID(tid, '2', cid_2), SID(tid, '2', sid_2),

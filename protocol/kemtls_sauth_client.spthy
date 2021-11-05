@@ -63,8 +63,8 @@ rule KEMTLS_SAUTH_ClientAction2:
   --[
     ProtocolMode(tid, '1', '1', 'KEMTLS_SAUTH_OR_MUTUAL'),
     ProtocolMode(tid, '2', '2', 'KEMTLS_SAUTH_OR_MUTUAL'),
-    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH'), ProtocolMode(tid, '3', '6', 'KEMTLS_SAUTH'),
-    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH'), ProtocolMode(tid, '4', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_SAUTH'),
     ProtocolMode(tid, '5', '5', 'KEMTLS_SAUTH'), ProtocolMode(tid, '5', '6', 'KEMTLS_SAUTH'),
     Owner(tid, 'anonymous'),
     CID(tid, '1', cid_1), SID(tid, '1', sid_1),

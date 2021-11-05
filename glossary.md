@@ -111,7 +111,7 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `Auth(tid, stage_target, stage_accepted)`: Records that thread `tid` has during stage `stage_accepted` accepted the stage `stage_target` key as authenticated.
 - `RevealedSessionKey(tid, stage)`: Records that the stage `stage` key in thread `tid` was revealed to the adversary.
 - `CorruptedLTK(P)`: Records that party `P`'s long-term secret key was revealed to the adversary.
-- `ProtocolMode(tid, mode)`: Records that thread `tid` is running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`).
+- `ProtocolMode(tid, stage_target, stage_accepted, mode)`: Records that thread `tid` has during stage `stage_accepted` accepted that stage `stage_target` was running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`, `KEMTLS_SAUTH_OR_MUTUAL`).
 
 ## State facts
 

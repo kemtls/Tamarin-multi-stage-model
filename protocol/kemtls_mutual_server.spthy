@@ -73,8 +73,8 @@ rule KEMTLS_MUTUAL_ServerAction2:
   ]
   --[
     Peer(tid, $C),
-    ProtocolMode(tid, '3', '3', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
-    ProtocolMode(tid, '4', '4', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH_OR_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
     CID(tid, '3', cid_3), SID(tid, '3', sid_3),
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),
