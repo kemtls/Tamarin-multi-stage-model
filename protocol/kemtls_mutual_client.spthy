@@ -47,10 +47,10 @@ rule KEMTLS_MUTUAL_ClientAction2:
     Accept(tid, '2'),
     Accept(tid, '3'),
     Accept(tid, '4'),
-    SK(tid, '1', CHTS), FS(tid, '1', 'wfs1'),
-    SK(tid, '2', SHTS), FS(tid, '2', 'wfs1'),
-    SK(tid, '3', CAHTS), FS(tid, '3', 'wfs2'),
-    SK(tid, '4', SAHTS), FS(tid, '4', 'wfs2')
+    SK(tid, '1', CHTS), FS(tid, '1', '1', 'wfs1'),
+    SK(tid, '2', SHTS), FS(tid, '2', '2', 'wfs1'),
+    SK(tid, '3', CAHTS), FS(tid, '3', '3', 'wfs2'),
+    SK(tid, '4', SAHTS), FS(tid, '4', '4', 'wfs2')
   ]->
   [
     !SessionKey(tid, '1', CHTS),
@@ -82,7 +82,7 @@ rule KEMTLS_MUTUAL_ClientAction3:
   --[
     CID(tid, '5', cid_5), SID(tid, '5', sid_5),
     Accept(tid, '5'),
-    SK(tid, '5', CATS), FS(tid, '5', 'wfs2')
+    SK(tid, '5', CATS), FS(tid, '5', '5', 'wfs2')
   ]->
   [
     !SessionKey(tid, '5', CATS),
@@ -107,18 +107,18 @@ rule KEMTLS_MUTUAL_ClientAction4:
   --[
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),
     Accept(tid, '6'),
-    SK(tid, '6', SATS), FS(tid, '6', 'fs'),
-    FS(tid, '1', 'fs'),
-    FS(tid, '2', 'fs'),
-    FS(tid, '3', 'fs'),
-    FS(tid, '4', 'fs'),
-    FS(tid, '5', 'fs'),
-    Auth(tid, '1'),
-    Auth(tid, '2'),
-    Auth(tid, '3'),
-    Auth(tid, '4'),
-    Auth(tid, '5'),
-    Auth(tid, '6')
+    SK(tid, '6', SATS), FS(tid, '6', '6', 'fs'),
+    FS(tid, '1', '6', 'fs'),
+    FS(tid, '2', '6', 'fs'),
+    FS(tid, '3', '6', 'fs'),
+    FS(tid, '4', '6', 'fs'),
+    FS(tid, '5', '6', 'fs'),
+    Auth(tid, '1', '6'),
+    Auth(tid, '2', '6'),
+    Auth(tid, '3', '6'),
+    Auth(tid, '4', '6'),
+    Auth(tid, '5', '6'),
+    Auth(tid, '6', '6')
   ]->
   [
     !SessionKey(tid, '6', SATS)
