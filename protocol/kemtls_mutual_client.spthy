@@ -36,7 +36,10 @@ rule KEMTLS_MUTUAL_ClientAction2:
     Fr(~coins_S)
   ]
   --[
-    ProtocolMode(tid, 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '1', '1', 'KEMTLS_SAUTH_OR_MUTUAL'),
+    ProtocolMode(tid, '2', '2', 'KEMTLS_SAUTH_OR_MUTUAL'),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
     Owner(tid, $C),
     CID(tid, '1', cid_1), SID(tid, '1', sid_1),
     CID(tid, '2', cid_2), SID(tid, '2', sid_2),
@@ -80,6 +83,7 @@ rule KEMTLS_MUTUAL_ClientAction3:
     In(<SERVER_KEM_CIPHERTEXT>)
   ]
   --[
+    ProtocolMode(tid, '5', '5', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '5', '6', 'KEMTLS_MUTUAL'),
     CID(tid, '5', cid_5), SID(tid, '5', sid_5),
     Accept(tid, '5'),
     SK(tid, '5', CATS), FS(tid, '5', '5', 'wfs2')
@@ -105,6 +109,9 @@ rule KEMTLS_MUTUAL_ClientAction4:
     In(<SERVER_FINISHED>)
   ]
   --[
+    ProtocolMode(tid, '1', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '2', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '6', '6', 'KEMTLS_MUTUAL'),
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),
     Accept(tid, '6'),
     SK(tid, '6', SATS), FS(tid, '6', '6', 'fs'),

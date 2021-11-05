@@ -25,7 +25,8 @@ rule KEMTLS_MUTUAL_ServerAction1:
     Fr(~r_s)
   ]
   --[
-    ProtocolMode(~tid, 'KEMTLS_MUTUAL'),
+    ProtocolMode(~tid, '1', '1', 'KEMTLS_SAUTH_OR_MUTUAL'),
+    ProtocolMode(~tid, '2', '2', 'KEMTLS_SAUTH_OR_MUTUAL'),
     Owner(~tid, $S),
     Role(~tid, 'server'),
     CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
@@ -72,6 +73,8 @@ rule KEMTLS_MUTUAL_ServerAction2:
   ]
   --[
     Peer(tid, $C),
+    ProtocolMode(tid, '3', '3', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '3', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '4', '6', 'KEMTLS_MUTUAL'),
     CID(tid, '3', cid_3), SID(tid, '3', sid_3),
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),
@@ -104,6 +107,10 @@ rule KEMTLS_MUTUAL_ServerAction3:
     In(<CLIENT_FINISHED>)
   ]
   --[
+    ProtocolMode(tid, '1', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '2', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '5', '5', 'KEMTLS_MUTUAL'), ProtocolMode(tid, '5', '6', 'KEMTLS_MUTUAL'),
+    ProtocolMode(tid, '6', '6', 'KEMTLS_MUTUAL'),
     CID(tid, '5', cid_5), SID(tid, '5', sid_5),
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),
     Accept(tid, '5'),

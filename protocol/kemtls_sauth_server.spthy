@@ -24,7 +24,8 @@ rule KEMTLS_SAUTH_ServerAction1:
     Fr(~r_s)
   ]
   --[
-    ProtocolMode(~tid, 'KEMTLS_SAUTH'),
+    ProtocolMode(~tid, '1', '1', 'KEMTLS_SAUTH_OR_MUTUAL'),
+    ProtocolMode(~tid, '2', '2', 'KEMTLS_SAUTH_OR_MUTUAL'),
     Owner(~tid, $S),
     Peer(~tid, 'anonymous'),
     Role(~tid, 'server'),
@@ -63,6 +64,8 @@ rule KEMTLS_SAUTH_ServerAction2Part1:
     In(<CLIENT_KEM_CIPHERTEXT>)
   ]
   --[
+    ProtocolMode(tid, '3', '3', 'KEMTLS_SAUTH'), ProtocolMode(tid, '3', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_SAUTH'), ProtocolMode(tid, '4', '6', 'KEMTLS_SAUTH'),
     CID(tid, '3', cid_3), SID(tid, '3', sid_3),
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),
@@ -97,6 +100,10 @@ rule KEMTLS_SAUTH_ServerAction2Part2:
     In(<CLIENT_FINISHED>)
   ]
   --[
+    ProtocolMode(tid, '1', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '2', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '5', '5', 'KEMTLS_SAUTH'), ProtocolMode(tid, '5', '6', 'KEMTLS_SAUTH'),
+    ProtocolMode(tid, '6', '6', 'KEMTLS_SAUTH'),
     CID(tid, '5', cid_5), SID(tid, '5', sid_5),
     CID(tid, '6', cid_6), SID(tid, '6', sid_6),
     Accept(tid, '5'),
