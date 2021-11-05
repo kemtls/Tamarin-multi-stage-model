@@ -27,12 +27,12 @@ lemma sk_security_stage1_client_wfs1:
 
 lemma sk_security_stage6_client_fs:
   "
-    All tid_c sid_6 key_6_c #t1 #t2 #t3 #t4
+    All tid_c sid_6 key_6_c #t1 #t_accepted #t3 #t4
     .
     // the instance is a client instance
     Role(tid_c, 'client') @ #t1
     // the client accepted a stage 6 key
-    & Accept(tid_c, '6') @ #t2
+    & Accept(tid_c, '6') @ #t_accepted
     & SID(tid_c, '6', sid_6) @ #t3
     & SK(tid_c, '6', key_6_c) @ #t4
     // (1) the client's stage 6 key was never revealed
@@ -61,7 +61,7 @@ lemma sk_security_stage6_client_fs:
           Ex S keytype #tt1 #tt2 .
           Peer(tid_c, S) @ #tt1
           & CorruptedLTK(S, keytype) @ #tt2
-          & #tt2 < #tt1
+          & #tt2 < #t_accepted
         )
       )
     )
