@@ -46,6 +46,7 @@ rule KEMTLS_MUTUAL_ServerAction1:
 
 rule KEMTLS_MUTUAL_ServerAction2:
   let
+    SERVER_CERTIFICATE = <pk_S>
     CLIENT_KEM_CIPHERTEXT = <ct_S>
     ss_S = KEM_s_Decaps(ct_S, sk_S)
     AHS = HKDFExtract(dHS, ss_S)
