@@ -3,6 +3,8 @@
 - No handshake encryption of protocol messages or adversary-supplied data
 - No application-layer encryption
 - No TLS data structures
+- No PSK mode
+- No modelling of KEMTLS-PDK (yet?)
 
 ## Security properties missing
 
