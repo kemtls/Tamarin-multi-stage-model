@@ -14,17 +14,40 @@ lemma match_prop0: // extra property: they agree on protocol mode
     )
   "
 
-lemma match_prop1_stage1:
+define(<!M_LEMMA_PROP1!>,<!
+lemma match_prop1_i$1_j$2:
   "
-    All tid_c tid_s sid_1 key_1_c key_1_s #t1 #t2 #t3 #t4 
+    All tid_c tid_s sid key_c key_s #t1 #t2 #t3 #t4
     .
     not(tid_c = tid_s)
-    & SID(tid_c, '1', sid_1) @ #t1
-    & SID(tid_s, '1', sid_1) @ #t2
-    & SK(tid_c, '1', key_1_c) @ #t3
-    & SK(tid_s, '1', key_1_s) @ #t4
-    ==> key_1_c = key_1_s
+    & SID(tid_c, '$1', sid) @ #t1
+    & SID(tid_s, '$1', sid) @ #t2
+    & SK(tid_c, '$2', key_c) @ #t3
+    & SK(tid_s, '$2', key_s) @ #t4
+    ==> key_c = key_s
   "
+!>)
+M_LEMMA_PROP1(1, 1)
+M_LEMMA_PROP1(2, 1)
+M_LEMMA_PROP1(2, 2)
+M_LEMMA_PROP1(3, 1)
+M_LEMMA_PROP1(3, 2)
+M_LEMMA_PROP1(3, 3)
+M_LEMMA_PROP1(4, 1)
+M_LEMMA_PROP1(4, 2)
+M_LEMMA_PROP1(4, 3)
+M_LEMMA_PROP1(4, 4)
+M_LEMMA_PROP1(5, 1)
+M_LEMMA_PROP1(5, 2)
+M_LEMMA_PROP1(5, 3)
+M_LEMMA_PROP1(5, 4)
+M_LEMMA_PROP1(5, 5)
+M_LEMMA_PROP1(6, 1)
+M_LEMMA_PROP1(6, 2)
+M_LEMMA_PROP1(6, 3)
+M_LEMMA_PROP1(6, 4)
+M_LEMMA_PROP1(6, 5)
+M_LEMMA_PROP1(6, 6)
 
 lemma match_prop2:
   "
@@ -52,5 +75,40 @@ lemma match_prop3:
       CID(tid_a, stage, cid_a) @ #t3
       & CID(tid_a, stage, cid_b) @ #t4
       & cid_a = cid_b
+    )
+  "
+
+lemma match_prop4:
+  "
+    All tid_a tid_b stage_i stage_j sid A B #t1 #t2 #t3 #t4 #t5
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage_i, sid) @ #t1
+    & SID(tid_b, stage_i, sid) @ #t2
+    & Auth(tid_a, stage_j, stage_i) @ #t3
+    & Peer(tid_a, A) @ #t4
+    & Owner(tid_b, B) @ #t5
+    ==> A = B
+  "
+
+lemma match_prop5:
+  "
+    All tid_a tid_b stage_i stage_j sid #t1 #t2
+    .
+    SID(tid_a, stage_i, sid) @ #t1
+    & SID(tid_b, stage_j, sid) @ #t2
+    ==> stage_i = stage_j
+  "
+
+lemma match_prop6:
+  "
+    All tid_a tid_b tid_c stage_i sid #t1 #t2 #t3
+    .
+    not(tid_a = tid_b)
+    & SID(tid_a, stage_i, sid) @ #t1
+    & SID(tid_b, stage_i, sid) @ #t2
+    & SID(tid_c, stage_i, sid) @ #t3
+    ==> (
+      (tid_a = tid_c) | (tid_b = tid_c)
     )
   "
