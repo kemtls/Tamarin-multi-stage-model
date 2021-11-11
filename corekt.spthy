@@ -18,6 +18,7 @@ include(protocol/kemtls_mutual_server.spthy)
 include(model/oracles.spthy)
 
 include(lemmas/reachable.spthy)
+include(lemmas/attacker_works.spthy)
 include(lemmas/match_security.spthy)
 include(lemmas/sk_security.spthy)
 include(lemmas/malicious_acceptance.spthy)
