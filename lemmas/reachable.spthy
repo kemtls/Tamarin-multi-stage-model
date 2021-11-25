@@ -79,9 +79,9 @@ dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1) dnl sa
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 1, 6, ⊤, ⊤, fs, fs)
 dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1) dnl same as above
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 2, 6, ⊤, ⊤, fs, fs)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs2)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs2) dnl XXX different from paper
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 3, 6, ⊤, ⊤, fs, fs)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs2)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs2) dnl XXX different from paper
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 4, 6, ⊤, ⊤, fs, fs)
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 5, ⊥, ⊤, wfs2, fs)
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 6, ⊤, ⊤, fs, fs)

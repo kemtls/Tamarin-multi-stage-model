@@ -80,8 +80,10 @@ rule KEMTLS_MUTUAL_ServerAction2:
     CID(tid, '4', cid_4), SID(tid, '4', sid_4),
     Accept(tid, '3'),
     Accept(tid, '4'),
-    SK(tid, '3', CAHTS), FS(tid, '3', '3', 'wfs2'),
-    SK(tid, '4', SAHTS), FS(tid, '4', '4', 'wfs2')
+    SK(tid, '3', CAHTS), FS(tid, '3', '3', 'wfs1'), // XXX different from paper
+    SK(tid, '4', SAHTS), FS(tid, '4', '4', 'wfs1')  // XXX different from paper
+    // Auth(tid, '3', '3') // XXX different from paper
+    // Auth(tid, '4', '4') // XXX different from paper
   ]->
   [
     !SessionKey(tid, '3', CAHTS),
@@ -129,6 +131,7 @@ rule KEMTLS_MUTUAL_ServerAction3:
     Auth(tid, '4', '6'),
     Auth(tid, '5', '5'),
     Auth(tid, '5', '6')
+    // Auth(tid, '6', '6') // XXX different from paper
   ]->
   [
     !SessionKey(tid, '5', CATS),
