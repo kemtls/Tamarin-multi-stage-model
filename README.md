@@ -1,4 +1,4 @@
-# Tamarain model for Core KEMTLS ("CoreKT")
+# Tamarin model for Core KEMTLS ("CoreKT")
 
 This repository contains a Tamarin model for the "core cryptographic version" of the KEMTLS protocol.  Roughly speaking, this means the version of KEMTLS as specified in Figures 3 and 7 of https://eprint.iacr.org/2020/534.pdf, without any additional the framing from the TLS protocol, such as extra TLS message fields, pre-shared key / resumption, or handshake / application layer encryption.
 
