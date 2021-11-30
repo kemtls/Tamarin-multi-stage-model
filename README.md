@@ -18,7 +18,7 @@ The goal of this modelling exercise is to very closely follow the pen-and-paper 
 	- `lemmas/attacker_works.spthy` contains a few basic lemmas that check that it's possible for the attacker to trigger its various corruption queries.
 	- `lemmas/match_security.spthy` contains lemmas that model "match security". This means the sound behaviour of session matching: that, for honest sessions, the session identifier matches the partnered session. This is a codification of Section B.4 and Definition B.1 of https://eprint.iacr.org/2020/534.pdf. Please see Section B.4 of the paper for references on the origin of modelling match security as a separate property for authenticated key exchange protocols.
 	- `lemmas/sk_security.spthy` contains lemmas that model session key security. There are separate lemmas checking keys that are intended to have "weak forward secrecy 1", "weak forward secrecy 2", or "(full) forward secrecy".  This is a codification of the freshness conditions in Definition B.3 of https://eprint.iacr.org/2020/534.pdf.
-	- `lemmas/malicious_acceptance.spthy` contains a lemma authentication security of KEMTLS: for session stages that believe they have authenticated their peer, there really is a matching session. This is a codification of Definition B.4 in https://eprint.iacr.org/2020/534.pdf.
+	- `lemmas/malicious_acceptance.spthy` contains a lemma that models authentication security of KEMTLS: for session stages that believe they have authenticated their peer, there really is a matching session. This is a codification of Definition B.4 in https://eprint.iacr.org/2020/534.pdf.
 
 - `corekt.spthy` uses m4 macros to pull all the above Tamarin source code into a single file.  Run the command `make preprocess` to generate the resulting file `generated_corekt.spthy`, which is the file you should actually have Tamarin run.
 
@@ -29,6 +29,6 @@ The goal of this modelling exercise is to very closely follow the pen-and-paper 
 1. You'll need to have a working version of [Tamarin prover](https://tamarin-prover.github.io) installed.
 2. Run `make preprocess` to generate a single Tamarin file `generated_corekt.spthy` from all the above sources.
 3. Run `make prove` to have Tamarin try to prove all the above lemmas.  The output will be shown on the screen and stored in the `output` directory.  On a 16-core machine with lots of RAM, it takes about 7 minutes of wall clock time to prove all the lemmas (using Tamarin version 1.6.1).
-	- You can prove a specific lemma with `make prove PROVE=sk_securty_wfs1`
+	- You can prove a specific lemma with `make prove PROVE=sk_security_wfs1` (for example).
 	- You can also use the Tamarin web UI: `tamarin-prover interactive .`
 
