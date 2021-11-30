@@ -6,11 +6,6 @@
 - No PSK mode
 - No modelling of KEMTLS-PDK (yet?)
 
-## Security properties missing
-
-- SK security of stage 2, 3, 4, 5 client keys
-- SK security of stage 1-6 server keys
-
 ## Interesting questions
 
 - What if KEM_e = KEM_c = KEM_s?
