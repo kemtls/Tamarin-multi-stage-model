@@ -1,4 +1,19 @@
-lemma match_prop0: // extra property: they agree on protocol mode
+/* This file contains lemmas that model "match security". This means the sound 
+ * behaviour of session matching: that, for honest sessions, the session identifier 
+ * matches the partnered session. 
+ * This is a codification of Section B.4 and Definition B.1 of 
+ * https://eprint.iacr.org/2020/534.pdf.
+ */
+
+/* This lemma checks an extra match security property that isn't included in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf, but has been added here:
+ * if two sessions pi and pi' are partnered in some stage i (meaning that they 
+ * have pi.sid_i = pi'.sid_i), then they agree on which mode of KEMTLS they
+ * are using (sever-only authentication or mutual authentication).
+ * This condition was not included in the original paper because the model there
+ * did not consider simultaneous execution of multiple protocol modes.
+ */
+lemma match_prop0:
   "
     All tid_a tid_b stage_targeted stage_accepted sid mode_a mode_b #t1 #t2 #t3 #t4 #t5 #t6
     .
@@ -14,6 +29,15 @@ lemma match_prop0: // extra property: they agree on protocol mode
     )
   "
 
+/* This macro generates lemmas that check match security condition 1 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 1 demands that, if two sessions pi and pi' are partnered in stage i
+ * (meaning that pi.sid_i = pi'.sid_i), then they agree the session key at all stages
+ * j ≤ i, i.e., pi.sk_j = pi'.sk_j for all j ≤ i.
+ * The lemma in the paper quantifies over all stages j ≤ i, but Tamarin does not
+ * let us model stages as integers that can be compared, so we use this macro to
+ * generate all possible (i, j) combinations satisfying j ≤ i, for i in {1, ..., 6}.
+ */
 define(<!M_LEMMA_PROP1!>,<!
 lemma match_prop1_i$1_j$2:
   "
@@ -49,6 +73,11 @@ M_LEMMA_PROP1(6, 4)
 M_LEMMA_PROP1(6, 5)
 M_LEMMA_PROP1(6, 6)
 
+/* This lemma checks match security condition 2 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 2 demands that, if two sessions pi and pi' are partnered in some 
+ * stage i (meaning that pi.sid_i = pi'.sid_i), then they have opposite roles.
+ */
 lemma match_prop2:
   "
     All tid_a tid_b stage sid role_a role_b #t1 #t2 #t3 #t4
@@ -61,6 +90,12 @@ lemma match_prop2:
     ==> not(role_a = role_b)
   "
 
+/* This lemma checks match security condition 3 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 3 demands that, if two sessions pi and pi' are partnered in some 
+ * stage i (meaning that they have the same *session* identifier pi.sid_i = pi'.sid_i), 
+ * then have also set and agree on the *contributive* identifier for that stage.
+ */
 lemma match_prop3:
   "
     All tid_a tid_b stage sid #t1 #t2
@@ -78,6 +113,14 @@ lemma match_prop3:
     )
   "
 
+/* This lemma checks match security condition 4 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 4 demands that, if two sessions pi and pi' are partnered in some 
+ * stage i (meaning that they have pi.sid_i = pi'.sid_i), then for every stage 
+ * j ≤ i that has reached a (possibly retroactive) explicitly authenticated state.
+ * represented by setting Auth(..., stage_i), the identity of the peer is correct,
+ * i.e., that pi.peer = pi'.owner
+ */
 lemma match_prop4:
   "
     All tid_a tid_b stage_i stage_j sid A B #t1 #t2 #t3 #t4 #t5
@@ -91,6 +134,12 @@ lemma match_prop4:
     ==> A = B
   "
 
+/* This lemma checks match security condition 5 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 5 demands that in any two (not necessarily)
+ * distinct sessions, distinct stages have distinct session identifiers,
+ * i.e., that pi.sid_i = pi''.sid_j implies i = j.
+ */
 lemma match_prop5:
   "
     All tid_a tid_b stage_i stage_j sid #t1 #t2
@@ -100,6 +149,13 @@ lemma match_prop5:
     ==> stage_i = stage_j
   "
 
+/* This lemma checks match security condition 6 as defined in 
+ * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf.
+ * Match property 6 demands that, if two distinct sessions pi and pi' are partnered in some 
+ * stage i (meaning that they have pi.sid_i = pi'.sid_i), then there is no distinct
+ * third session that is also partnered in stage i (i.e., no pi'' != pi, pi' such that
+ * pi''.sid_i = pi.sid_i).
+ */
 lemma match_prop6:
   "
     All tid_a tid_b tid_c stage_i sid #t1 #t2 #t3

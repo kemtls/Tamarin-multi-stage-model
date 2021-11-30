@@ -1,15 +1,23 @@
+/* This file contains lemmas that model session key security. */
+
+/* This lemma captures that keys marked as having "weak forward secrecy 1" are 
+ * secure.  This is a codification of the wfs1 freshness condition in Definition B.3, 
+ * clauses (1), (2), and (3), of https://eprint.iacr.org/2020/534.pdf.
+ */
 lemma sk_security_wfs1:
   "
     All tid_owner i cid_i sid_i sk_i
     #taccept #tcid #tsid #tsk
     .
+    // if stage i has accepted a session key with corresponding contributive and session identifiers
     Accept(tid_owner, i) @ #taccept
     & CID(tid_owner, i, cid_i) @ #tcid
     & SID(tid_owner, i, sid_i) @ #tsid
     & SK(tid_owner, i, sk_i) @ #tsk
+    // and it is fresh in the sense of wfs1, namely that
     // (1) the stage key was not revealed
     & not(Ex #t . RevealedSessionKey(tid_owner, i) @ #t)
-    // (2) the stage key of the partner session at stage i, if the partner exists, 
+    // and (2) the stage key of the partner session at stage i, if the partner exists, 
     // has not been revealed
     & not(
       Ex tid_partner #tt1 #tt2 .
@@ -17,7 +25,7 @@ lemma sk_security_wfs1:
       & SID(tid_partner, i, sid_i) @ #tt1
       & RevealedSessionKey(tid_partner, i) @ #tt2
     )
-    // (3) there exists j ≥ i s.t. Pi.FS_{i,j} = wfs1, Pi.status_j = accepted, 
+    // and (3) there exists j ≥ i s.t. Pi.FS_{i,j} = wfs1, Pi.status_j = accepted, 
     // and there exists a contributive partner at stage i
     & (
       Ex j #tfs #tacceptj .
@@ -31,84 +39,100 @@ lemma sk_security_wfs1:
       )
     )
     ==>
+    // then the session key cannot be learned by the adversary
     not(Ex #t . KU(sk_i) @ #t)
   "
 
+/* This lemma captures that keys marked as having "weak forward secrecy 2" are 
+ * secure.  This is a codification of the wfs2 freshness condition in Definition B.3, 
+ * clauses (1), (2), and (4), of https://eprint.iacr.org/2020/534.pdf.
+ */
 lemma sk_security_wfs2:
   "
     All tid_owner pid i cid_i sid_i sk_i
     #taccept #tpid #tcid #tsid #tsk
     .
+    // if stage i has accepted a session key with a particular peer and corresponding 
+    // contributive and session identifiers
     Accept(tid_owner, i) @ #taccept
     & Peer(tid_owner, pid) @ #tpid
     & CID(tid_owner, i, cid_i) @ #tcid
     & SID(tid_owner, i, sid_i) @ #tsid
     & SK(tid_owner, i, sk_i) @ #tsk
+    // and it is fresh in the sense of wfs2, namely that
     // (1) the stage key was not revealed
     & not(Ex #t . RevealedSessionKey(tid_owner, i) @ #t)
-    // (2) the stage key of the partner session at stage i, if the partner exists,
+    // and (2) the stage key of the partner session at stage i, if the partner exists,
     // has not been revealed
     & not(Ex tid_partner #tt1 #tt2 .
       not(tid_owner = tid_partner)
       & SID(tid_partner, i, sid_i) @ #tt1
       & RevealedSessionKey(tid_partner, i) @ #tt2
     )
-    // (3) there exists j ≥ i s.t. Pi.FS_{i,j} = wfs2, Pi.status_j = accepted, 
-    // and either
-    // (a) there exists a contributive partner at stage i, or
-    // (b) Corrupt(Pi.pid) was never called
+    // and (4) there exists j ≥ i s.t. Pi.FS_{i,j} = wfs2, Pi.status_j = accepted, 
     & (
       Ex j #tfs #tacceptj .
       FS(tid_owner, i, j, 'wfs2') @ #tfs
       & Accept(tid_owner, j) @ #tacceptj
+      // and either
       & (
+          // (4.a) there exists a contributive partner at stage i,
           (
             Ex tid_peer #tacceptjpeer #tcidpeer .
             not(tid_owner = tid_peer)
             & Accept(tid_peer, j) @ #tacceptjpeer
             & CID(tid_peer, i, cid_i) @ #tcidpeer
+          // or (4.b) Corrupt(Pi.pid) was never called
           ) | (
             not(Ex keytype #tcorrupt . CorruptedLTK(pid, keytype) @ #tcorrupt)
           )
         )
       )
     ==>
+    // then the session key cannot be learned by the adversary
     not(Ex #t . KU(sk_i) @ #t)
   "
 
+/* This lemma captures that keys marked as having (full) "forward secrecy" are 
+ * secure.  This is a codification of the fs freshness condition in Definition B.3, 
+ * clauses (1), (2), and (5), of https://eprint.iacr.org/2020/534.pdf.
+ */
 lemma sk_security_fs:
   "
     All tid_owner pid i cid_i sid_i sk_i
     #taccept #tpid #tcid #tsid #tsk
     .
+    // if stage i has accepted a session key with a particular peer and corresponding 
+    // contributive and session identifiers
     Accept(tid_owner, i) @ #taccept
     & Peer(tid_owner, pid) @ #tpid
     & CID(tid_owner, i, cid_i) @ #tcid
     & SID(tid_owner, i, sid_i) @ #tsid
     & SK(tid_owner, i, sk_i) @ #tsk
+    // and it is fresh in the sense of fs, namely that
     // (1) the stage key was not revealed
     & not(Ex #t . RevealedSessionKey(tid_owner, i) @ #t)
-    // (2) the stage key of the partner session at stage i, if the partner exists,
+    // and (2) the stage key of the partner session at stage i, if the partner exists,
     // has not been revealed
     & not(Ex tid_partner #tt1 #tt2 .
       not(tid_owner = tid_partner)
       & SID(tid_partner, i, sid_i) @ #tt1
       & RevealedSessionKey(tid_partner, i) @ #tt2
     )
-    // (3) there exists j ≥ i s.t. Pi.FS_{i,j} = wfs2, Pi.status_j = accepted, 
-    // and either
-    // (a) there exists a contributive partner at stage i, or
-    // (b) Corrupt(Pi.pid) was not called before stage j of session Pi accepted
+    // and (5) there exists j ≥ i s.t. Pi.FS_{i,j} = fs, Pi.status_j = accepted, 
     & (
       Ex j #tfs #tacceptj .
       FS(tid_owner, i, j, 'fs') @ #tfs
       & Accept(tid_owner, j) @ #tacceptj
+      // and either
       & (
+          // (5.a) there exists a contributive partner at stage i,
           (
             Ex tid_peer #tacceptjpeer #tcidpeer .
             not(tid_owner = tid_peer)
             & Accept(tid_peer, j) @ #tacceptjpeer
             & CID(tid_peer, i, cid_i) @ #tcidpeer
+          // or (5.b) Corrupt(Pi.pid) was not called before stage j of session Pi accepted
           ) | (
             not(
               Ex keytype #tcorrupt . 
@@ -119,5 +143,6 @@ lemma sk_security_fs:
         )
       )
     ==>
+    // then the session key cannot be learned by the adversary
     not(Ex #t . KU(sk_i) @ #t)
   "

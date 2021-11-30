@@ -1,3 +1,10 @@
+/* This file contains a few basic lemmas that check that it's possible for the
+ * attacker to trigger its various corruption queries.
+ */
+
+/* This lemma checks that it is possible for the attacker to trigger the RevealSK 
+ * oracle.
+ */
 lemma attacker_works_revealsk:
   exists-trace
   "
@@ -6,6 +13,9 @@ lemma attacker_works_revealsk:
     RevealedSessionKey(tid, stage) @ #t1
   "
 
+/* This macro generates lemmas that check that it is possible for the attacker 
+ * to trigger the CorrupeLTK oracle for each type of long-term key.
+ */
 dnl M_LEMMA_ATTACKER_WORKS_CORRUPTLTK
 dnl arguments:
 dnl $1: KEM type (KEM_c, KEM_s)

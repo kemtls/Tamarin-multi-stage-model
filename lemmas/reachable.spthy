@@ -1,3 +1,15 @@
+/* This file contains lemmas that model correctness of the protocol. In particular,
+ * we want to check that it is possible to generate sessions and stages that
+ * achieve each of the intended states.
+ */
+ 
+/* This macro generates lemmas that check that it is possible to reach a particular
+ * stage with the specified security properties.  A new lemma will be generated
+ * for each protocol mode (server-only authentication or mutual authentication),
+ * each stage we're retroactively assessing the properties of, the stage that
+ * has accepted, whether the client and server expect authentication at that stage,
+ * and what level of forward secrecy client and server expect at that stage.
+ */
 dnl M_LEMMA_REACHABLE
 dnl arguments:
 dnl $1: protocol mode (KEMTLS_MUTUAL, KEMTLS_SAUTH)
@@ -63,6 +75,14 @@ lemma reachable_$1_stage$2_accepted$3_c$6_s$7:
   "
 !>)
 
+// Now we apply the macro to generate the specific properties expected.
+
+/* For KEMTLS with server-only authentication, the lemmas below are a 
+ * codification of the FS and auth parameters specified in Section B.3
+ * of https://eprint.iacr.org/2020/534.pdf.
+ * Note that some protocol modes are marked as SAUTH_OR_MUTUAL because 
+ * the first few stages are the same in either mode.
+ */
 M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1)
 M_LEMMA_REACHABLE(KEMTLS_SAUTH, 1, 6, ⊤, ⊥, fs, wfs1)
 M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1)
@@ -75,13 +95,20 @@ M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 5, ⊥, ⊥, wfs2, wfs1)
 M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 6, ⊤, ⊥, fs, wfs1)
 M_LEMMA_REACHABLE(KEMTLS_SAUTH, 6, 6, ⊤, ⊥, fs, wfs1)
 
+/* For KEMTLS with mutual authentication, the lemmas below are a 
+ * codification of the FS and auth parameters specified in Section C.1
+ * of https://eprint.iacr.org/2020/534.pdf.
+ * Note that some protocol modes are marked as SAUTH_OR_MUTUAL because 
+ * the first few stages are the same in either mode; these are commented
+ * out here because they are the same as above.
+ */
 dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1) dnl same as above
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 1, 6, ⊤, ⊤, fs, fs)
 dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1) dnl same as above
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 2, 6, ⊤, ⊤, fs, fs)
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs2) dnl XXX different from paper
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs1) dnl same as above
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 3, 6, ⊤, ⊤, fs, fs)
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs2) dnl XXX different from paper
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs1) dnl same as above
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 4, 6, ⊤, ⊤, fs, fs)
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 5, ⊥, ⊤, wfs2, fs)
 M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 6, ⊤, ⊤, fs, fs)

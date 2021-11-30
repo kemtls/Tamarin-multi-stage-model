@@ -100,6 +100,9 @@ All variants of KEMTLS can use:
 For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 
 - `Registered(P, pk, type)`: Records that a public key `pk` of type `type` (either `KEM_c` or `KEM_s`) was registered for party `P`.
+
+The following action facts directly correspond to variables in the multi stage key exchange model in Section B.1 of https://eprint.iacr.org/2020/534.pdf.
+
 - `Owner(tid, P)` or `Owner(tid, 'anonymous')`: Records that the owner of thread `tid` is party `P` or is anonymous.
 - `Role(tid, 'client')` or `Role(tid, 'server')`: Records that the role of the party in thread `tid` is a client or a server.
 - `CID(tid, stage, cid)`: Records that the contributive identifier of stage `stage` for thread `tid` is `cid`.
@@ -109,9 +112,13 @@ For KEMTLS, `stage` can be `'1'`, `'2'`, ..., `'6'`.
 - `SK(tid, stage, key)`: Records that thread `tid` has accepted key `key` in stage `stage`.
 - `FS(tid, stage_target, stage_accepted, fslevel)`: Records that thread `tid` has during stage `stage_accepted` accepted the stage `stage_target` key as having forward secrecy level `fslevel` (in `wfs1`, `wfs2`, `fs`).
 - `Auth(tid, stage_target, stage_accepted)`: Records that thread `tid` has during stage `stage_accepted` accepted the stage `stage_target` key as authenticated.
+- `ProtocolMode(tid, stage_target, stage_accepted, mode)`: Records that thread `tid` has during stage `stage_accepted` accepted that stage `stage_target` was running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`, `KEMTLS_SAUTH_OR_MUTUAL`).
+	- Note this variable was not present in the original paper since the original model did not account for running multiple protocol modes simultaneously.
+
+The following action facts record adversary use of corruption oracles:
+
 - `RevealedSessionKey(tid, stage)`: Records that the stage `stage` key in thread `tid` was revealed to the adversary.
 - `CorruptedLTK(P)`: Records that party `P`'s long-term secret key was revealed to the adversary.
-- `ProtocolMode(tid, stage_target, stage_accepted, mode)`: Records that thread `tid` has during stage `stage_accepted` accepted that stage `stage_target` was running in protocol mode `mode` (one of: `KEMTLS_SAUTH`, `KEMTLS_MUTUAL`, `KEMTLS_SAUTH_OR_MUTUAL`).
 
 ## State facts
 
