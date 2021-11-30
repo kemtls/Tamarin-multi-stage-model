@@ -1,0 +1,70 @@
+Git commit: dd050530acc5bb8e32cb6f765b322dc609859bc3
+Running on ygritte.cs.ru.nl
+With options +RTS -N16 -RTS
+Tue 30 Nov 2021
+
+==============================================================================
+summary of summaries:
+
+analyzed: generated_corekt.spthy
+
+  output:          output/generated_corekt_analyzed.spthy
+  processing time: 414.153767931s
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage1_accepted1_cwfs1_swfs1 (exists-trace): verified (47 steps)
+  reachable_KEMTLS_SAUTH_stage1_accepted6_cfs_swfs1 (exists-trace): verified (54 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage2_accepted2_cwfs1_swfs1 (exists-trace): verified (47 steps)
+  reachable_KEMTLS_SAUTH_stage2_accepted6_cfs_swfs1 (exists-trace): verified (54 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage3_accepted3_cwfs2_swfs1 (exists-trace): verified (55 steps)
+  reachable_KEMTLS_SAUTH_stage3_accepted6_cfs_swfs1 (exists-trace): verified (62 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage4_accepted4_cwfs2_swfs1 (exists-trace): verified (55 steps)
+  reachable_KEMTLS_SAUTH_stage4_accepted6_cfs_swfs1 (exists-trace): verified (62 steps)
+  reachable_KEMTLS_SAUTH_stage5_accepted5_cwfs2_swfs1 (exists-trace): verified (48 steps)
+  reachable_KEMTLS_SAUTH_stage5_accepted6_cfs_swfs1 (exists-trace): verified (57 steps)
+  reachable_KEMTLS_SAUTH_stage6_accepted6_cfs_swfs1 (exists-trace): verified (61 steps)
+  reachable_KEMTLS_MUTUAL_stage1_accepted6_cfs_sfs (exists-trace): verified (62 steps)
+  reachable_KEMTLS_MUTUAL_stage2_accepted6_cfs_sfs (exists-trace): verified (62 steps)
+  reachable_KEMTLS_MUTUAL_stage3_accepted6_cfs_sfs (exists-trace): verified (73 steps)
+  reachable_KEMTLS_MUTUAL_stage4_accepted6_cfs_sfs (exists-trace): verified (73 steps)
+  reachable_KEMTLS_MUTUAL_stage5_accepted5_cwfs2_sfs (exists-trace): verified (64 steps)
+  reachable_KEMTLS_MUTUAL_stage5_accepted6_cfs_sfs (exists-trace): verified (68 steps)
+  reachable_KEMTLS_MUTUAL_stage6_accepted6_cfs_sfs (exists-trace): verified (66 steps)
+  attacker_works_revealsk (exists-trace): verified (3 steps)
+  attacker_works_corruptltk_KEM_c (exists-trace): verified (3 steps)
+  attacker_works_corruptltk_KEM_s (exists-trace): verified (3 steps)
+  match_prop0 (all-traces): verified (1772 steps)
+  match_prop1_i1_j1 (all-traces): verified (91 steps)
+  match_prop1_i2_j1 (all-traces): verified (91 steps)
+  match_prop1_i2_j2 (all-traces): verified (91 steps)
+  match_prop1_i3_j1 (all-traces): verified (68 steps)
+  match_prop1_i3_j2 (all-traces): verified (68 steps)
+  match_prop1_i3_j3 (all-traces): verified (108 steps)
+  match_prop1_i4_j1 (all-traces): verified (68 steps)
+  match_prop1_i4_j2 (all-traces): verified (68 steps)
+  match_prop1_i4_j3 (all-traces): verified (108 steps)
+  match_prop1_i4_j4 (all-traces): verified (108 steps)
+  match_prop1_i5_j1 (all-traces): verified (54 steps)
+  match_prop1_i5_j2 (all-traces): verified (54 steps)
+  match_prop1_i5_j3 (all-traces): verified (94 steps)
+  match_prop1_i5_j4 (all-traces): verified (94 steps)
+  match_prop1_i5_j5 (all-traces): verified (78 steps)
+  match_prop1_i6_j1 (all-traces): verified (56 steps)
+  match_prop1_i6_j2 (all-traces): verified (56 steps)
+  match_prop1_i6_j3 (all-traces): verified (96 steps)
+  match_prop1_i6_j4 (all-traces): verified (96 steps)
+  match_prop1_i6_j5 (all-traces): verified (80 steps)
+  match_prop1_i6_j6 (all-traces): verified (88 steps)
+  match_prop2 (all-traces): verified (258 steps)
+  match_prop3 (all-traces): verified (26 steps)
+  match_prop4 (all-traces): verified (586 steps)
+  match_prop5 (all-traces): verified (138 steps)
+  match_prop6 (all-traces): verified (366 steps)
+  sk_security_wfs1 (all-traces): verified (1729 steps)
+  sk_security_wfs2 (all-traces): verified (2782 steps)
+  sk_security_fs (all-traces): verified (7620 steps)
+  malicious_acceptance (all-traces): verified (4400 steps)
+
+==============================================================================
+
+real    6m54.430s
+user    46m35.430s
+sys     35m21.114s
