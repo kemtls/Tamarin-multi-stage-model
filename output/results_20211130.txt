@@ -1,5 +1,6 @@
 Git commit: dd050530acc5bb8e32cb6f765b322dc609859bc3
 Running on ygritte.cs.ru.nl
+tamarin-prover 1.6.1
 With options +RTS -N16 -RTS
 Tue 30 Nov 2021
 

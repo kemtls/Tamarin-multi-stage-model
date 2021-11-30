@@ -1,5 +1,6 @@
 Git commit: 26c2f23292218c3ce46ffd9ae020e0e67d8834b0
 Running on ygritte.cs.ru.nl
+tamarin-prover 1.6.1
 Thu 25 Nov 2021 05:44:35 PM CET
 
 ==============================================================================

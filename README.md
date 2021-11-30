@@ -28,7 +28,7 @@ The goal of this modelling exercise is to very closely follow the pen-and-paper 
 
 1. You'll need to have a working version of [Tamarin prover](https://tamarin-prover.github.io) installed.
 2. Run `make preprocess` to generate a single Tamarin file `generated_corekt.spthy` from all the above sources.
-3. Run `make prove` to have Tamarin try to prove all the above lemmas.  The output will be shown on the screen and stored in the `output` directory.  On a 16-core machine with lots of RAM, it takes about 7 minutes of wall clock time to prove all the lemmas.
+3. Run `make prove` to have Tamarin try to prove all the above lemmas.  The output will be shown on the screen and stored in the `output` directory.  On a 16-core machine with lots of RAM, it takes about 7 minutes of wall clock time to prove all the lemmas (using Tamarin version 1.6.1).
 	- You can prove a specific lemma with `make prove PROVE=sk_securty_wfs1`
 	- You can also use the Tamarin web UI: `tamarin-prover interactive .`
 
