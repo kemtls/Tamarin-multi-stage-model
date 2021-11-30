@@ -31,7 +31,7 @@ lemma sk_security_wfs1:
       )
     )
     ==>
-    not(Ex #t . K(sk_i) @ #t)
+    not(Ex #t . KU(sk_i) @ #t)
   "
 
 lemma sk_security_wfs2:
@@ -73,7 +73,7 @@ lemma sk_security_wfs2:
         )
       )
     ==>
-    not(Ex #t . K(sk_i) @ #t)
+    not(Ex #t . KU(sk_i) @ #t)
   "
 
 lemma sk_security_fs:
@@ -119,5 +119,5 @@ lemma sk_security_fs:
         )
       )
     ==>
-    not(Ex #t . K(sk_i) @ #t)
+    not(Ex #t . KU(sk_i) @ #t)
   "
