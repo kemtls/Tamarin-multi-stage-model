@@ -45,9 +45,9 @@ lemma reachable_$1_stage$2_accepted$3_c$6_s$7:
     ∧ Role(tid_c, 'client') @ #t7         // the client has the right role
     ∧ Role(tid_s, 'server') @ #t8         // the server has the right role
     ∧ Accept(tid_c, '$2') @ #t9           // the client accepted in stage $2
-    ∧ Accept(tid_s, '$2') @ #t10          // the client accepted in stage $2
+    ∧ Accept(tid_s, '$2') @ #t10          // the server accepted in stage $2
     ∧ Accept(tid_c, '$3') @ #t11           // the client accepted in stage $3
-    ∧ Accept(tid_s, '$3') @ #t12          // the client accepted in stage $3
+    ∧ Accept(tid_s, '$3') @ #t12          // the server accepted in stage $3
     ∧ CID(tid_c, '$2', sid_target) @ #t13        // the client and server have the same CID as the SID for stage $2
     ∧ CID(tid_s, '$2', sid_target) @ #t14
     ∧ SID(tid_c, '$2', sid_target) @ #t15
