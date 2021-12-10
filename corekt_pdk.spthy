@@ -1,0 +1,22 @@
+changequote(<!,!>)
+
+theory corekt
+begin
+
+include(protocol/primitives.spthy)
+
+include(protocol/kemtls_keygen.spthy)
+
+include(protocol/kemtls_pdk_sauth_defines.spthy)
+include(protocol/kemtls_pdk_sauth_client.spthy)
+include(protocol/kemtls_pdk_sauth_server.spthy)
+
+include(model/oracles.spthy)
+
+include(lemmas/reachable_pdk.spthy)
+dnl include(lemmas/attacker_works.spthy)
+dnl include(lemmas/match_security.spthy)
+dnl include(lemmas/sk_security.spthy)
+dnl include(lemmas/malicious_acceptance.spthy)
+
+end

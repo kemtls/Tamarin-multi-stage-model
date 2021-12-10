@@ -1,0 +1,87 @@
+/* This file contains lemmas that model correctness of the protocol. In particular,
+ * we want to check that it is possible to generate sessions and stages that
+ * achieve each of the intended states.
+ */
+ 
+/* This macro generates lemmas that check that it is possible to reach a particular
+ * stage with the specified security properties.  A new lemma will be generated
+ * for each protocol mode (server-only authentication or mutual authentication),
+ * each stage we're retroactively assessing the properties of, the stage that
+ * has accepted, whether the client and server expect authentication at that stage,
+ * and what level of forward secrecy client and server expect at that stage.
+ */
+dnl M_LEMMA_REACHABLE
+dnl arguments:
+dnl $1: protocol mode (KEMTLS_MUTUAL, KEMTLS_SAUTH)
+dnl $2: stage number we're assessing properties of (1, 2, 3, 4, 5, 6)
+dnl $3: stage number that has accepted
+dnl $4: does the client expect server authentication at this stage? (⊤, ⊥)
+dnl $5: does the server expect server authentication at this stage? (⊤, ⊥)
+dnl $6: what level of FS does the client expect at this stage?
+dnl $7: what level of FS does the server expect at this stage?
+define(<!M_LEMMA_REACHABLE!>,<!
+lemma reachable_$1_stage$2_accepted$3_c$6_s$7:
+  exists-trace
+  "
+    ∃ tid_c tid_s C S sid_target sid_accepted #t1 #t2 #t3 #t4 #t5 #t6 #t7 #t8 #t9 #t10 #t11 #t12 #t13 #t14 #t15 #t16 #t17 #t18 #t19 #t20 #t21 #t22
+    .
+    not(tid_c = tid_s)                    // distinct threads
+    ∧ ProtocolMode(tid_c, '$2', '$3', '$1') @ #t1     // client is running in protocol mode $1
+    ∧ ProtocolMode(tid_s, '$2', '$3', '$1') @ #t2     // server is running in protocol mode $1
+    ∧ Owner(tid_c, C) @ #t3               // the owner of the client thread
+    ∧ Owner(tid_s, S) @ #t4               // the owner of the server thread
+    ∧ Peer(tid_c, S) @ #t5                // the client has the right peer
+    ∧ Peer(tid_s, C) @ #t6                // the server has the right peer
+    ∧ (                                   // either
+      (¬$4 ∧ (S = 'anonymous'))           // the client does not expect authentication, so the server is anonymous
+      ∨                                   // or
+      ($4 ∧ (¬(S = 'anonymous')))         // the client does expect authentication, so the server is not anonymous
+    )
+    ∧ (                                   // either
+      (¬$5 ∧ (C = 'anonymous'))           // the server does not expect authentication, so the client is anonymous
+      ∨                                   // or
+      ($5 ∧ (¬(C = 'anonymous')))         // the server does expect authentication, so the client is not anonymous
+    )
+    ∧ Role(tid_c, 'client') @ #t7         // the client has the right role
+    ∧ Role(tid_s, 'server') @ #t8         // the server has the right role
+    ∧ Accept(tid_c, '$2') @ #t9           // the client accepted in stage $2
+    ∧ Accept(tid_s, '$2') @ #t10          // the server accepted in stage $2
+    ∧ Accept(tid_c, '$3') @ #t11           // the client accepted in stage $3
+    ∧ Accept(tid_s, '$3') @ #t12          // the server accepted in stage $3
+    ∧ CID(tid_c, '$2', sid_target) @ #t13        // the client and server have the same CID as the SID for stage $2
+    ∧ CID(tid_s, '$2', sid_target) @ #t14
+    ∧ SID(tid_c, '$2', sid_target) @ #t15
+    ∧ SID(tid_s, '$2', sid_target) @ #t16
+    ∧ CID(tid_c, '$3', sid_accepted) @ #t17        // the client and server have the same CID as the SID for stage $3
+    ∧ CID(tid_s, '$3', sid_accepted) @ #t18
+    ∧ SID(tid_c, '$3', sid_accepted) @ #t19
+    ∧ SID(tid_s, '$3', sid_accepted) @ #t20
+    ∧ (                                   // either
+      ($4                                       // the client expects server authentication,
+        ∧ (Ex #tt1 . Auth(tid_c, '$2', '$3') @ #tt1)) // so the client accepted stage $2 as authenticated in stage $3
+      ∨                                   // or
+      (¬$4                                       // the client does not expect server authentication,
+        ∧ ¬(Ex stage #tt1 . Auth(tid_c, '$2', stage) @ #tt1)) // so the client has never accepted stage $2 as authenticated
+    )
+    ∧ (                                   // either
+      ($5                                       // the server expects client authentication,
+        ∧ (Ex #tt1 . Auth(tid_s, '$2', '$3') @ #tt1)) // so the server has accepted stage $2 as authenticated in stage $3
+      ∨                                   // or
+      (¬$5                                       // the server does not expect client authentication,
+        ∧ ¬(Ex stage #tt1 . Auth(tid_s, '$2', stage) @ #tt1)) // so the server has never accepted stage $2 as authenticated
+    )
+    ∧ FS(tid_c, '$2', '$3', '$6') @ #t21        // the client has the right forward secrecy level in stage $2 as of stage $3
+    ∧ FS(tid_s, '$2', '$3', '$7') @ #t22        // the server has the right forward secrecy level in stage $2 as of stage $3
+  "
+!>)
+
+// Now we apply the macro to generate the specific properties expected.
+
+/* For KEMTLS-PDK with server-only authentication, the lemmas below are a 
+ * codification of the FS and auth parameters specified in Section B.3
+ * of https://eprint.iacr.org/2021/779.pdf.
+ */
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 1, ⊥, ⊥, 0, 0)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 2, ⊥, ⊥, wfs2, wfs1)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 2, ⊥, ⊥, wfs2, wfs1)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 3, 3, ⊥, ⊥, wfs2, wfs1)
