@@ -1,0 +1,70 @@
+Git commit: 4c0062278d27c330e6e55f44b490bd4cd6c3ddbe
+Running on ygritte.cs.ru.nl
+tamarin-prover 1.6.1
+With options +RTS -N16 -RTS
+Fri 17 Dec 2021
+
+==============================================================================
+summary of summaries:
+
+analyzed: generated_corekt.spthy
+
+  output:          output/generated_corekt_analyzed.spthy
+  processing time: 1457.395377655s
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage1_accepted1_cwfs1_swfs1 (exists-trace): verified (47 steps)
+  reachable_KEMTLS_SAUTH_stage1_accepted6_cfs_swfs1 (exists-trace): verified (54 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage2_accepted2_cwfs1_swfs1 (exists-trace): verified (47 steps)
+  reachable_KEMTLS_SAUTH_stage2_accepted6_cfs_swfs1 (exists-trace): verified (54 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage3_accepted3_cwfs2_swfs1 (exists-trace): verified (55 steps)
+  reachable_KEMTLS_SAUTH_stage3_accepted6_cfs_swfs1 (exists-trace): verified (62 steps)
+  reachable_KEMTLS_SAUTH_OR_MUTUAL_stage4_accepted4_cwfs2_swfs1 (exists-trace): verified (55 steps)
+  reachable_KEMTLS_SAUTH_stage4_accepted6_cfs_swfs1 (exists-trace): verified (62 steps)
+  reachable_KEMTLS_SAUTH_stage5_accepted5_cwfs2_swfs1 (exists-trace): verified (48 steps)
+  reachable_KEMTLS_SAUTH_stage5_accepted6_cfs_swfs1 (exists-trace): verified (57 steps)
+  reachable_KEMTLS_SAUTH_stage6_accepted6_cfs_swfs1 (exists-trace): verified (61 steps)
+  reachable_KEMTLS_MUTUAL_stage1_accepted6_cfs_sfs (exists-trace): verified (62 steps)
+  reachable_KEMTLS_MUTUAL_stage2_accepted6_cfs_sfs (exists-trace): verified (62 steps)
+  reachable_KEMTLS_MUTUAL_stage3_accepted6_cfs_sfs (exists-trace): verified (73 steps)
+  reachable_KEMTLS_MUTUAL_stage4_accepted6_cfs_sfs (exists-trace): verified (73 steps)
+  reachable_KEMTLS_MUTUAL_stage5_accepted5_cwfs2_sfs (exists-trace): verified (64 steps)
+  reachable_KEMTLS_MUTUAL_stage5_accepted6_cfs_sfs (exists-trace): verified (68 steps)
+  reachable_KEMTLS_MUTUAL_stage6_accepted6_cfs_sfs (exists-trace): verified (66 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage1_accepted1_cnofs_snofs (exists-trace): verified (31 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage1_accepted2_cnofs_snofs (exists-trace): verified (42 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage1_accepted3_cnofs_snofs (exists-trace): verified (42 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage1_accepted4_cnofs_snofs (exists-trace): verified (46 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage1_accepted5_cnofs_snofs (exists-trace): verified (53 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage2_accepted2_cwfs2_swfs1 (exists-trace): verified (46 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage2_accepted3_cwfs2_swfs1 (exists-trace): verified (46 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage2_accepted4_cfs_swfs1 (exists-trace): verified (50 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage2_accepted5_cfs_swfs1 (exists-trace): verified (57 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage3_accepted3_cwfs2_swfs1 (exists-trace): verified (46 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage3_accepted4_cfs_swfs1 (exists-trace): verified (50 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage3_accepted5_cfs_swfs1 (exists-trace): verified (57 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage4_accepted4_cfs_swfs1 (exists-trace): verified (50 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage4_accepted5_cfs_swfs1 (exists-trace): verified (57 steps)
+  reachable_KEMTLS_PDK_SAUTH_stage5_accepted5_cfs_swfs1 (exists-trace): verified (63 steps)
+  attacker_works_revealsk (exists-trace): verified (3 steps)
+  attacker_works_corruptltk_KEM_c (exists-trace): verified (3 steps)
+  attacker_works_corruptltk_KEM_s (exists-trace): verified (3 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage1 (exists-trace): verified (7 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage2 (exists-trace): verified (7 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage3 (exists-trace): verified (13 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage4 (exists-trace): verified (13 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_stage5 (exists-trace): verified (12 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_stage6 (exists-trace): verified (21 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_MUTUAL_stage5 (exists-trace): verified (15 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_MUTUAL_stage6 (exists-trace): verified (24 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_PDK_SAUTH_stage1 (exists-trace): verified (7 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_PDK_SAUTH_stage2 (exists-trace): verified (8 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_PDK_SAUTH_stage3 (exists-trace): verified (8 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_PDK_SAUTH_stage4 (exists-trace): verified (8 steps)
+  attacker_works_learn_sessionkey_modeKEMTLS_PDK_SAUTH_stage5 (exists-trace): verified (19 steps)
+  sk_security_nofs_client (all-traces): verified (1146 steps)
+  sk_security_nofs_server (all-traces): verified (971 steps)
+  sk_security_wfs1 (all-traces): verified (2923 steps)
+  sk_security_wfs2 (all-traces): verified (5706 steps)
+  sk_security_fs (all-traces): verified (13807 steps)
+  malicious_acceptance (all-traces): verified (18895 steps)
+
+==============================================================================
