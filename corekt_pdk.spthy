@@ -1,6 +1,6 @@
 changequote(<!,!>)
 
-theory corekt
+theory corekt_pdk
 begin
 
 include(protocol/primitives.spthy)
@@ -14,10 +14,10 @@ include(protocol/kemtls_pdk_sauth_server.spthy)
 include(model/oracles.spthy)
 
 include(lemmas/reachable_pdk.spthy)
-dnl include(lemmas/attacker_works.spthy)
+include(lemmas/attacker_works.spthy)
 dnl include(lemmas/match_security.spthy)
 include(lemmas/sk_security.spthy)
-dnl include(lemmas/malicious_acceptance.spthy)
+include(lemmas/malicious_acceptance.spthy)
 dnl include(lemmas/replayability.spthy) // want to model replayability as well
 
 end

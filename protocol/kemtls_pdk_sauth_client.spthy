@@ -123,15 +123,10 @@ rule KEMTLS_PDK_SAUTH_ClientAction2_part2:
     SK(tid, '4', SATS),
     SK(tid, '5', CATS),
     Peer(tid, $S),
-    Auth(tid, '1', '4'),
-    Auth(tid, '1', '5'),
+    // Auth(tid, '1', '4') // TODO model replayability
     Auth(tid, '2', '4'),
-    Auth(tid, '2', '5'),
     Auth(tid, '3', '4'),
-    Auth(tid, '3', '5'),
-    Auth(tid, '4', '4'),
-    Auth(tid, '4', '5'),
-    Auth(tid, '5', '5')
+    Auth(tid, '4', '4')
   ]->
   [
     Out(<CLIENT_FINISHED>),
