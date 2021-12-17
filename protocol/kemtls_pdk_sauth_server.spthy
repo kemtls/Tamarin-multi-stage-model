@@ -64,7 +64,8 @@ rule KEMTLS_PDK_SAUTH_ServerAction1:
     SK(~tid, '3', SHTS),
     FS(~tid, '3', '3', 'wfs1'), FS(~tid, '3', '4', 'wfs1'),
     SK(~tid, '4', SATS),
-    FS(~tid, '4', '4', 'wfs1')
+    FS(~tid, '4', '4', 'wfs1'),
+    Replayable(~tid, '1')
   ]->
   [ 
     Out(~tid),

@@ -26,7 +26,8 @@ rule KEMTLS_PDK_SAUTH_ClientAction1:
     Owner(~tid, 'anonymous'),
     Peer(~tid, $S),
     SK(~tid, '1', ETS),
-    FS(~tid, '1', '1', '0')
+    FS(~tid, '1', '1', '0'),
+    Replayable(~tid, '1')
   ]->
   [
     Out(~tid),
