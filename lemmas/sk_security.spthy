@@ -1,19 +1,20 @@
 /* This file contains lemmas that model session key security. */
 
-/* This lemma captures that keys marked as having "no fs ('0')" are 
+/* This lemma captures that keys at a client session marked as having "no fs ('0')" are 
  * secure.  This is a codification of the freshness condition in Definition B.5 2, 
- * clauses (1), (2), and (3), of https://eprint.iacr.org/2021/779.pdf.
+ * clauses (1), (2) and (3) of https://eprint.iacr.org/2021/779.pdf.
  */
-lemma sk_security_nofs:
+lemma sk_security_nofs_client:
   "
     All tid_owner i cid_i sid_i sk_i pid
-    #taccept #tcid #tsid #tsk #tpeer #tfs
+    #taccept #tcid #tsid #tsk #trole #tpeer #tfs
     .
     // if stage i has accepted a session key with corresponding contributive and session identifiers
     Accept(tid_owner, i) @ #taccept
     & CID(tid_owner, i, cid_i) @ #tcid
     & SID(tid_owner, i, sid_i) @ #tsid
     & SK(tid_owner, i, sk_i) @ #tsk
+    & Role(tid_owner, 'client') @ #trole
     & Peer(tid_owner, pid) @ #tpeer
     & FS(tid_owner, i, i, 'nofs') @ #tfs
     // and it is fresh in the sense of nofs, namely that
@@ -27,12 +28,48 @@ lemma sk_security_nofs:
       & SID(tid_partner, i, sid_i) @ #tt1
       & RevealedSessionKey(tid_partner, i) @ #tt2
     )
-    // and (3) if stage i is replayable, CorruptLTK(peer) has never been called
-    & (
-      not(Ex #tr . Replayable(tid_owner, i) @ #tr)
-      | 
-      not(Ex keytype #tcorrupt . CorruptedLTK(pid, keytype) @ #tcorrupt)
+    // and (3) the server's long-term key has not been corrupted
+    & not(Ex keytype #tcorrupt . CorruptedLTK(pid, keytype) @ #tcorrupt)
+    ==>
+    // then the session key cannot be learned by the adversary
+    not(Ex #t . KU(sk_i) @ #t)
+  "
+
+/* This lemma captures that keys at a server session marked as having "no fs ('0')" are 
+ * secure.  This is a codification of the freshness condition in Definition B.5 2, 
+ * clauses (1) and (2) of https://eprint.iacr.org/2021/779.pdf, along with conditions 
+ * that are erroneously missing from that definition.
+ */
+lemma sk_security_nofs_server:
+  "
+    All tid_owner tid_cidpeer i cid_i sid_i sk_i owner pid
+    #taccept #tcid #tpeerown #tcidpeer #tsid #tsk #trole #towner #tfs
+    .
+    // if stage i has accepted a session key with corresponding contributive and session identifiers
+    Accept(tid_owner, i) @ #taccept
+    & CID(tid_owner, i, cid_i) @ #tcid
+    & SID(tid_owner, i, sid_i) @ #tsid
+    & SK(tid_owner, i, sk_i) @ #tsk
+    & Role(tid_owner, 'server') @ #trole
+    & Owner(tid_owner, owner) @ #towner
+    & FS(tid_owner, i, i, 'nofs') @ #tfs
+    // and it is fresh in the sense of nofs, namely that
+    // (1) the stage key was not revealed
+    & not(Ex #t . RevealedSessionKey(tid_owner, i) @ #t)
+    // and (2) the stage key of the partner session at stage i, if the partner exists, 
+    // has not been revealed
+    & not(
+      Ex tid_partner #tt1 #tt2 .
+      not(tid_owner = tid_partner)
+      & SID(tid_partner, i, sid_i) @ #tt1
+      & RevealedSessionKey(tid_partner, i) @ #tt2
     )
+    // and a contributive partner exists not at this party
+    & Owner(tid_cidpeer, pid) @ #tpeerown
+    & not(owner = pid)
+    & CID(tid_cidpeer, i, cid_i) @ #tcidpeer
+    // and the server's long-term key has not been corrupted
+    & not(Ex keytype #tcorrupt . CorruptedLTK(owner, keytype) @ #tcorrupt)
     ==>
     // then the session key cannot be learned by the adversary
     not(Ex #t . KU(sk_i) @ #t)
