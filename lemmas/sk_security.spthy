@@ -1,5 +1,43 @@
 /* This file contains lemmas that model session key security. */
 
+/* This lemma captures that keys marked as having "no fs ('0')" are 
+ * secure.  This is a codification of the freshness condition in Definition B.5 2, 
+ * clauses (1), (2), and (3), of https://eprint.iacr.org/2021/779.pdf.
+ */
+lemma sk_security_nofs:
+  "
+    All tid_owner i cid_i sid_i sk_i pid
+    #taccept #tcid #tsid #tsk #tpeer #tfs
+    .
+    // if stage i has accepted a session key with corresponding contributive and session identifiers
+    Accept(tid_owner, i) @ #taccept
+    & CID(tid_owner, i, cid_i) @ #tcid
+    & SID(tid_owner, i, sid_i) @ #tsid
+    & SK(tid_owner, i, sk_i) @ #tsk
+    & Peer(tid_owner, pid) @ #tpeer
+    & FS(tid_owner, i, i, 'nofs') @ #tfs
+    // and it is fresh in the sense of nofs, namely that
+    // (1) the stage key was not revealed
+    & not(Ex #t . RevealedSessionKey(tid_owner, i) @ #t)
+    // and (2) the stage key of the partner session at stage i, if the partner exists, 
+    // has not been revealed
+    & not(
+      Ex tid_partner #tt1 #tt2 .
+      not(tid_owner = tid_partner)
+      & SID(tid_partner, i, sid_i) @ #tt1
+      & RevealedSessionKey(tid_partner, i) @ #tt2
+    )
+    // and (3) if stage i is replayable, CorruptLTK(peer) has never been called
+    & (
+      not(Ex #tr . Replayable(tid_owner, i) @ #tr)
+      | 
+      not(Ex keytype #tcorrupt . CorruptedLTK(pid, keytype) @ #tcorrupt)
+    )
+    ==>
+    // then the session key cannot be learned by the adversary
+    not(Ex #t . KU(sk_i) @ #t)
+  "
+
 /* This lemma captures that keys marked as having "weak forward secrecy 1" are 
  * secure.  This is a codification of the wfs1 freshness condition in Definition B.3, 
  * clauses (1), (2), and (3), of https://eprint.iacr.org/2020/534.pdf.

@@ -1,8 +1,8 @@
 /* This lemma captures authentication security of KEMTLS: for session stages that 
  * believe they have authenticated their peer (by recording Auth and Peer action 
  * facts), there really is a matching session.
- * This is a codification of Definition B.4 in https://eprint.iacr.org/2020/534.pdf.
- * (Clauses numbered in parentheses (1), (2), (3) refer to clauses in Definition B.4 
+ * This is a codification of Definition B.5.3 in https://eprint.iacr.org/2021/779.pdf.
+ * (Clauses numbered in parentheses (1), (3), (4) refer to clauses in Definition B.5.3
  * in the paper.)
  */
 lemma malicious_acceptance:
@@ -13,7 +13,7 @@ lemma malicious_acceptance:
     Accept(tid, stage_target) @ #t_accept
     // and (1) the stage has been accepted as authenticated (which may be later than when the stage accepted)
     ∧ Auth(tid, stage_target, stage_accepted) @ #t_auth
-    // and (3) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
+    // and (4) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
     ∧ not(
       Ex S keytype #tt1 #t_corrupted .
       Peer(tid, S) @ #tt1
@@ -29,7 +29,7 @@ lemma malicious_acceptance:
         ∧ SID(tid, stage_target, sid) @ #tt1
         ∧ SID(tid_other, stage_target, sid) @ #tt2
       )
-      // and (2) it is unique (i.e., there are not three distinct instances with this sid) 
+      // and (3) it is unique (i.e., there are not three distinct instances with this sid) 
       // unless it was a replayable stage
       ∧ (
         (Ex #ttr . Replayable(tid, stage_target) @ #ttr)

@@ -129,11 +129,11 @@ M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 6, 6, ⊤, ⊥, fs, fs, ⊥)
  * codification of the FS and auth parameters specified in Section B.3
  * of https://eprint.iacr.org/2021/779.pdf.
  */
-M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 1, ⊥, ⊥, 0, 0, ⊤)
-M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 2, ⊥, ⊥, 0, 0, ⊤)
-M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 3, ⊥, ⊥, 0, 0, ⊤)
-M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 4, ⊤, ⊥, 0, 0, ⊤)
-M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 5, ⊥, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 1, ⊥, ⊥, nofs, nofs, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 2, ⊥, ⊥, nofs, nofs, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 3, ⊥, ⊥, nofs, nofs, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 4, ⊤, ⊥, nofs, nofs, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 5, ⊥, ⊥, nofs, nofs, ⊤)
 M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 2, ⊥, ⊥, wfs2, wfs1, ⊥)
 M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 3, ⊥, ⊥, wfs2, wfs1, ⊥)
 M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 4, ⊤, ⊥, fs, wfs1, ⊥)
