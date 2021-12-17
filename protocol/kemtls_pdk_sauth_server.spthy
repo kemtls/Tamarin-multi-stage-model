@@ -77,39 +77,38 @@ rule KEMTLS_PDK_SAUTH_ServerAction1:
     !SessionKey(~tid, '4', SATS)
   ]
 
-  rule KEMTLS_PDK_SAUTH_ServerAction2:
-    let
-      SERVER_CERTIFICATE = <pk_S>
-      CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
-      SERVER_HELLO = <ct_e, r_s>
-      SERVER_FINISHED = <SF>
-      CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED>)
-      CLIENT_FINISHED = <CF>
-      CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED, CLIENT_FINISHED>)
-      cid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
-      sid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
-    in
-    [
-      !Ltk($S, pk_S, sk_S, 'KEM_s'),
-      State(tid, 'KEMTLS_PDK_SAUTH', 'ServerAction1', <MS, fk_c>, M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT),
-      In(<CLIENT_FINISHED>)
-    ]
-    --[
-      ProtocolMode(tid, '1', '5', 'KEMTLS_PDK_SAUTH'),
-      ProtocolMode(tid, '2', '5', 'KEMTLS_PDK_SAUTH'),
-      ProtocolMode(tid, '3', '5', 'KEMTLS_PDK_SAUTH'),
-      ProtocolMode(tid, '4', '5', 'KEMTLS_PDK_SAUTH'),
-      ProtocolMode(tid, '5', '5', 'KEMTLS_PDK_SAUTH'),
-      CID(tid, '5', cid_5), SID(tid, '5', sid_5),
-      Accept(tid, '5'),
-      FS(tid, '1', '5', 'nofs'),
-      FS(tid, '2', '5', 'wfs1'),
-      FS(tid, '3', '5', 'wfs1'),
-      FS(tid, '4', '5', 'wfs1'),
-      FS(tid, '5', '5', 'wfs1'),
-      SK(tid, '5', CATS)
-    ]->
-    [ 
-      !SessionKey(tid, '5', CATS)
-    ]
-
+rule KEMTLS_PDK_SAUTH_ServerAction2:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
+    SERVER_HELLO = <ct_e, r_s>
+    SERVER_FINISHED = <SF>
+    CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED, CLIENT_FINISHED>)
+    cid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
+    sid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
+  in
+  [
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    State(tid, 'KEMTLS_PDK_SAUTH', 'ServerAction1', <MS, fk_c>, M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT),
+    In(<CLIENT_FINISHED>)
+  ]
+  --[
+    ProtocolMode(tid, '1', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '2', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '3', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '4', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '5', '5', 'KEMTLS_PDK_SAUTH'),
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    Accept(tid, '5'),
+    FS(tid, '1', '5', 'nofs'),
+    FS(tid, '2', '5', 'wfs1'),
+    FS(tid, '3', '5', 'wfs1'),
+    FS(tid, '4', '5', 'wfs1'),
+    FS(tid, '5', '5', 'wfs1'),
+    SK(tid, '5', CATS)
+  ]->
+  [ 
+    !SessionKey(tid, '5', CATS)
+  ]
