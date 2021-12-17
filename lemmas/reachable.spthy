@@ -19,6 +19,7 @@ dnl $4: does the client expect server authentication at this stage? (⊤, ⊥)
 dnl $5: does the server expect server authentication at this stage? (⊤, ⊥)
 dnl $6: what level of FS does the client expect at this stage?
 dnl $7: what level of FS does the server expect at this stage?
+dnl $8: is the stage considered replayable?
 define(<!M_LEMMA_REACHABLE!>,<!
 lemma reachable_$1_stage$2_accepted$3_c$6_s$7:
   exists-trace
@@ -60,41 +61,49 @@ lemma reachable_$1_stage$2_accepted$3_c$6_s$7:
       ($4                                       // the client expects server authentication,
         ∧ (Ex #tt1 . Auth(tid_c, '$2', '$3') @ #tt1)) // so the client accepted stage $2 as authenticated in stage $3
       ∨                                   // or
-      (¬$4                                       // the client does not expect server authentication,
-        ∧ ¬(Ex stage #tt1 . Auth(tid_c, '$2', stage) @ #tt1)) // so the client has never accepted stage $2 as authenticated
+      (¬$4)                                     // the client does not expect server authentication,
     )
     ∧ (                                   // either
       ($5                                       // the server expects client authentication,
         ∧ (Ex #tt1 . Auth(tid_s, '$2', '$3') @ #tt1)) // so the server has accepted stage $2 as authenticated in stage $3
       ∨                                   // or
-      (¬$5                                       // the server does not expect client authentication,
-        ∧ ¬(Ex stage #tt1 . Auth(tid_s, '$2', stage) @ #tt1)) // so the server has never accepted stage $2 as authenticated
+      (¬$5)                                     // the server does not expect client authentication,
     )
     ∧ FS(tid_c, '$2', '$3', '$6') @ #t21        // the client has the right forward secrecy level in stage $2 as of stage $3
     ∧ FS(tid_s, '$2', '$3', '$7') @ #t22        // the server has the right forward secrecy level in stage $2 as of stage $3
+    ∧ ( // either 
+      // the stage is expected to be replayable so it's marked as so by both client and server
+      ($8 ∧ (Ex #ttc . Replayable(tid_c, '$2') @ #ttc) ∧ (Ex #tts . Replayable(tid_s, '$2') @ #tts))
+      ∨
+      // or the stage is not expected to be replayable so it's not marked as so by neither client nor server
+      (¬$8 ∧ ¬(Ex #ttc . Replayable(tid_c, '$2') @ #ttc) ∧ ¬(Ex #tts . Replayable(tid_s, '$2') @ #tts))
+    )
   "
 !>)
 
 // Now we apply the macro to generate the specific properties expected.
 
+#ifdef INCLUDE_KEMTLS_SAUTH
 /* For KEMTLS with server-only authentication, the lemmas below are a 
  * codification of the FS and auth parameters specified in Section B.3
  * of https://eprint.iacr.org/2020/534.pdf.
  * Note that some protocol modes are marked as SAUTH_OR_MUTUAL because 
  * the first few stages are the same in either mode.
  */
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 1, 6, ⊤, ⊥, fs, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 2, 6, ⊤, ⊥, fs, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 3, 6, ⊤, ⊥, fs, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 4, 6, ⊤, ⊥, fs, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 5, ⊥, ⊥, wfs2, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 6, ⊤, ⊥, fs, wfs1)
-M_LEMMA_REACHABLE(KEMTLS_SAUTH, 6, 6, ⊤, ⊥, fs, wfs1)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 1, 6, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 2, 6, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 3, 6, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 4, 6, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 5, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 5, 6, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_SAUTH, 6, 6, ⊤, ⊥, fs, wfs1, ⊥)
+#endif
 
+#ifdef INCLUDE_KEMTLS_MUTUAL
 /* For KEMTLS with mutual authentication, the lemmas below are a 
  * codification of the FS and auth parameters specified in Section C.1
  * of https://eprint.iacr.org/2020/534.pdf.
@@ -102,14 +111,37 @@ M_LEMMA_REACHABLE(KEMTLS_SAUTH, 6, 6, ⊤, ⊥, fs, wfs1)
  * the first few stages are the same in either mode; these are commented
  * out here because they are the same as above.
  */
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1) dnl same as above
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 1, 6, ⊤, ⊤, fs, fs)
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1) dnl same as above
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 2, 6, ⊤, ⊤, fs, fs)
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs1) dnl same as above
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 3, 6, ⊤, ⊤, fs, fs)
-dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs1) dnl same as above
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 4, 6, ⊤, ⊤, fs, fs)
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 5, ⊥, ⊤, wfs2, fs)
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 6, ⊤, ⊤, fs, fs)
-M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 6, 6, ⊤, ⊥, fs, fs)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 1, 1, ⊥, ⊥, wfs1, wfs1, ⊥) dnl same as above
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 1, 6, ⊤, ⊤, fs, fs, ⊥)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 2, 2, ⊥, ⊥, wfs1, wfs1, ⊥) dnl same as above
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 2, 6, ⊤, ⊤, fs, fs, ⊥)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 3, 3, ⊥, ⊥, wfs2, wfs1, ⊥) dnl same as above
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 3, 6, ⊤, ⊤, fs, fs, ⊥)
+dnl M_LEMMA_REACHABLE(KEMTLS_SAUTH_OR_MUTUAL, 4, 4, ⊥, ⊥, wfs2, wfs1, ⊥) dnl same as above
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 4, 6, ⊤, ⊤, fs, fs, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 5, ⊥, ⊤, wfs2, fs, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 5, 6, ⊤, ⊤, fs, fs, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_MUTUAL, 6, 6, ⊤, ⊥, fs, fs, ⊥)
+#endif
+
+#ifdef INCLUDE_KEMTLS_PDK_SAUTH
+/* For KEMTLS-PDK with server-only authentication, the lemmas below are a 
+ * codification of the FS and auth parameters specified in Section B.3
+ * of https://eprint.iacr.org/2021/779.pdf.
+ */
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 1, ⊥, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 2, ⊥, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 3, ⊥, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 4, ⊤, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 1, 5, ⊥, ⊥, 0, 0, ⊤)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 2, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 3, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 4, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 2, 5, ⊥, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 3, 3, ⊥, ⊥, wfs2, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 3, 4, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 3, 5, ⊥, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 4, 4, ⊤, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 4, 5, ⊥, ⊥, fs, wfs1, ⊥)
+M_LEMMA_REACHABLE(KEMTLS_PDK_SAUTH, 5, 5, ⊥, ⊥, fs, wfs1, ⊥)
+#endif

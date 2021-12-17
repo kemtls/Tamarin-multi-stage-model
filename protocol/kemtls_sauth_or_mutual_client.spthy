@@ -1,0 +1,22 @@
+rule KEMTLS_SAUTH_OR_MUTUAL_ClientAction1:
+  let
+    pk_e = KEM_e_PK(~sk_e)
+    CLIENT_HELLO = <pk_e, ~r_c>
+    cid_1 = <'CHTS', CLIENT_HELLO>
+    ES = HKDFExtract('0', '0')
+    dES = HKDFExpand(ES, 'derived', '0')
+  in
+  [
+    Fr(~tid),
+    Fr(~sk_e),
+    Fr(~r_c)
+  ]
+  --[
+    Role(~tid, 'client'),
+    CID(~tid, '1', cid_1)
+  ]->
+  [
+    Out(~tid),
+    Out(<CLIENT_HELLO>),
+    State(~tid, 'KEMTLS_SAUTH_OR_MUTUAL', 'ClientAction1', <~sk_e, dES>, <CLIENT_HELLO>)
+  ]

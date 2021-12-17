@@ -14,7 +14,7 @@ lemma attacker_works_revealsk:
   "
 
 /* This macro generates lemmas that check that it is possible for the attacker 
- * to trigger the CorrupeLTK oracle for each type of long-term key.
+ * to trigger the CorruptLTK oracle for each type of long-term key.
  */
 dnl M_LEMMA_ATTACKER_WORKS_CORRUPTLTK
 dnl arguments:
@@ -37,3 +37,47 @@ M_LEMMA_ATTACKER_WORKS_CORRUPTLTK(KEM_s)
 // (and does at the time I wrote this comment) fail to find a trace in which
 // the attacker corrupts a KEM_e key.
 dnl M_LEMMA_ATTACKER_WORKS_CORRUPTLTK(KEM_e) 
+
+/* This macro generates lemmas that check that it is possible for the attacker 
+ * to learn the session key of a particular type of stage.
+ */
+dnl M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY
+dnl arguments:
+dnl $1: protocol mode (KEMTLS_MUTUAL, KEMTLS_SAUTH)
+dnl $2: stage number we're assessing properties of (1, 2, 3, 4, 5, 6)
+define(<!M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY!>,<!
+lemma attacker_works_learn_sessionkey_mode$1_stage$2:
+  exists-trace
+  "
+    ∃ tid sk #t1 #t2 #t3 #t4
+    .
+    ProtocolMode(tid, '$2', '$2', '$1') @ #t1
+    & Accept(tid, '$2') @ #t2
+    & SK(tid, '$2', sk) @ #t3
+    & K(sk) @ #t4
+  "
+!>)
+#ifdef INCLUDE_KEMTLS_SAUTH_OR_MUTUAL
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH_OR_MUTUAL, 1)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH_OR_MUTUAL, 2)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH_OR_MUTUAL, 3)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH_OR_MUTUAL, 4)
+#endif
+
+#ifdef INCLUDE_KEMTLS_SAUTH
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH, 5)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_SAUTH, 6)
+#endif
+
+#ifdef INCLUDE_KEMTLS_MUTUAL
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_MUTUAL, 5)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_MUTUAL, 6)
+#endif
+
+#ifdef INCLUDE_KEMTLS_PDK_SAUTH
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_PDK_SAUTH, 1)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_PDK_SAUTH, 2)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_PDK_SAUTH, 3)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_PDK_SAUTH, 4)
+M_LEMMA_ATTACKER_WORKS_LEARN_SESSION_KEY(KEMTLS_PDK_SAUTH, 5)
+#endif
