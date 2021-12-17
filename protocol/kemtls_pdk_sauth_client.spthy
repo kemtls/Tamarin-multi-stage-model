@@ -39,7 +39,7 @@ rule KEMTLS_PDK_SAUTH_ClientAction2_part1:
   let
     SERVER_CERTIFICATE = <pk_S>
     CLIENT_HELLO = <pk_e, r_c, ct_S>
-    SERVER_HELLO = <ct_e>
+    SERVER_HELLO = <ct_e, r_s>
     ss_e = KEM_e_Decaps(ct_e, sk_e)
     HS = HKDFExtract(dES, ss_e)
     CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
@@ -48,8 +48,6 @@ rule KEMTLS_PDK_SAUTH_ClientAction2_part1:
     SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
     cid_3 = <'SHTS', M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT>
     sid_3 = <'SHTS', M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT>
-    dHS = HKDFExpand(HS, 'derived', '0')
-    MS = HKDFExtract(dHS, '0')
   in
   [
     !Pk($S, pk_S, 'KEM_s'),
@@ -73,7 +71,70 @@ rule KEMTLS_PDK_SAUTH_ClientAction2_part1:
     FS(tid, '3', '3', 'wfs2')
   ]->
   [
-    State(tid, 'KEMTLS_PDK_SAUTH', 'ClientAction2_part1', <MS>, M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT),
+    State(tid, 'KEMTLS_PDK_SAUTH', 'ClientAction2_part1', <HS>, M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT),
     !SessionKey(tid, '2', CHTS),
     !SessionKey(tid, '3', SHTS)
+  ]
+
+rule KEMTLS_PDK_SAUTH_ClientAction2_part2:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_HELLO = <pk_e, r_c, ct_S>
+    SERVER_HELLO = <ct_e, r_s>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    MS = HKDFExtract(dHS, '0')
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    SF = HMAC(fk_s, <CLIENT_HELLO, SERVER_HELLO>)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED>)
+    cid_4 = <'SATS', M_KEMTLS_PDK_SAUTH_STAGE4_TRANSCRIPT>
+    sid_4 = <'SATS', M_KEMTLS_PDK_SAUTH_STAGE4_TRANSCRIPT>
+    CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED, CLIENT_FINISHED>)
+    cid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
+    sid_5 = <'CATS', M_KEMTLS_PDK_SAUTH_STAGE5_TRANSCRIPT>
+  in
+  [
+    !Pk($S, pk_S, 'KEM_s'),
+    State(tid, 'KEMTLS_PDK_SAUTH', 'ClientAction2_part1', <HS>, M_KEMTLS_PDK_SAUTH_STAGE3_TRANSCRIPT),
+    In(<SERVER_FINISHED>)
+  ]
+  --[
+    ProtocolMode(tid, '1', '4', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '1', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '2', '4', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '2', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '3', '4', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '3', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '4', '4', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '4', '5', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(tid, '5', '5', 'KEMTLS_PDK_SAUTH'),
+    CID(tid, '4', cid_4), SID(tid, '4', sid_4),
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    Accept(tid, '4'),
+    Accept(tid, '5'),
+    FS(tid, '1', '4', 'fs'), FS(tid, '1', '5', 'fs'), 
+    FS(tid, '2', '4', 'fs'), FS(tid, '2', '5', 'fs'),
+    FS(tid, '3', '4', 'fs'), FS(tid, '3', '5', 'fs'),
+    FS(tid, '4', '4', 'fs'), FS(tid, '4', '5', 'fs'),
+    FS(tid, '5', '5', 'fs'),
+    SK(tid, '4', SATS),
+    SK(tid, '5', CATS),
+    Peer(tid, $S),
+    Auth(tid, '1', '4'),
+    Auth(tid, '1', '5'),
+    Auth(tid, '2', '4'),
+    Auth(tid, '2', '5'),
+    Auth(tid, '3', '4'),
+    Auth(tid, '3', '5'),
+    Auth(tid, '4', '4'),
+    Auth(tid, '4', '5'),
+    Auth(tid, '5', '5')
+  ]->
+  [
+    Out(<CLIENT_FINISHED>),
+    !SessionKey(tid, '4', SATS),
+    !SessionKey(tid, '5', CATS)
   ]

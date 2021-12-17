@@ -18,5 +18,6 @@ dnl include(lemmas/attacker_works.spthy)
 dnl include(lemmas/match_security.spthy)
 dnl include(lemmas/sk_security.spthy)
 dnl include(lemmas/malicious_acceptance.spthy)
+dnl include(lemmas/replayability.spthy) // want to model replayability as well
 
 end
