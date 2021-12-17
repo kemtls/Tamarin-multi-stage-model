@@ -3,7 +3,8 @@ functions:
   KEM_s_PK/1, KEM_s_Encaps_ct/2, KEM_s_Encaps_ss/2, KEM_s_Decaps/2,
   KEM_c_PK/1, KEM_c_Encaps_ct/2, KEM_c_Encaps_ss/2, KEM_c_Decaps/2,
   HKDFExtract/2, HKDFExpand/3,
-  HMAC/2
+  HMAC/2,
+  H/1
 
 equations:
   // correctness of KEM_e decapsulation

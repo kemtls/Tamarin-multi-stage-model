@@ -1,7 +1,7 @@
 rule KEMTLS_PDK_SAUTH_ServerAction1:
   let
     SERVER_CERTIFICATE = <pk_S>
-    CLIENT_HELLO = <pk_e, r_c, ct_S>
+    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
     ss_S = KEM_s_Decaps(ct_S, sk_S)
     ES = HKDFExtract('0', ss_S)
     ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
@@ -80,7 +80,7 @@ rule KEMTLS_PDK_SAUTH_ServerAction1:
   rule KEMTLS_PDK_SAUTH_ServerAction2:
     let
       SERVER_CERTIFICATE = <pk_S>
-      CLIENT_HELLO = <pk_e, r_c, ct_S>
+      CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
       SERVER_HELLO = <ct_e, r_s>
       SERVER_FINISHED = <SF>
       CF = HMAC(fk_c, <CLIENT_HELLO, SERVER_HELLO, SERVER_FINISHED>)
