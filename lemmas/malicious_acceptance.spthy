@@ -12,33 +12,36 @@ lemma malicious_acceptance:
     // if the stage has accepted
     Accept(tid, stage_target) @ #t_accept
     // and (1) the stage has been accepted as authenticated (which may be later than when the stage accepted)
-    & Auth(tid, stage_target, stage_accepted) @ #t_auth
+    ∧ Auth(tid, stage_target, stage_accepted) @ #t_auth
     // and (3) the peer's long-term key was not corrupted before the owner's stage was accepted as authenticated
-    & not(
+    ∧ not(
       Ex S keytype #tt1 #t_corrupted .
       Peer(tid, S) @ #tt1
-      & CorruptedLTK(S, keytype) @ #t_corrupted
-      & #t_corrupted < #t_auth
+      ∧ CorruptedLTK(S, keytype) @ #t_corrupted
+      ∧ #t_corrupted < #t_auth
     )
     // then
-    ==>
+    ⇒
       // there exists a partner at this stage
       (
         Ex sid tid_other #tt1 #tt2 .
         not(tid = tid_other)
-        & SID(tid, stage_target, sid) @ #tt1
-        & SID(tid_other, stage_target, sid) @ #tt2
+        ∧ SID(tid, stage_target, sid) @ #tt1
+        ∧ SID(tid_other, stage_target, sid) @ #tt2
       )
-      // and (2) it is unique (i.e., there are not three distinct instances with this sid)
-      & (
+      // and (2) it is unique (i.e., there are not three distinct instances with this sid) 
+      // unless it was a replayable stage
+      ∧ (
+        (Ex #ttr . Replayable(tid, stage_target) @ #ttr)
+        ∨
         not(
           Ex sid tid_1 tid_2 #tt0 #tt1 #tt2 .
           not(tid = tid_1)
-          & not(tid = tid_2)
-          & not(tid_1 = tid_2)
-          & SID(tid, stage_target, sid) @ #tt0
-          & SID(tid_1, stage_target, sid) @ #tt1
-          & SID(tid_2, stage_target, sid) @ #tt2
+          ∧ not(tid = tid_2)
+          ∧ not(tid_1 = tid_2)
+          ∧ SID(tid, stage_target, sid) @ #tt0
+          ∧ SID(tid_1, stage_target, sid) @ #tt1
+          ∧ SID(tid_2, stage_target, sid) @ #tt2
         )
       )
   "
