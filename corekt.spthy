@@ -35,6 +35,12 @@ include(protocol/kemtls_pdk_sauth_client.spthy)
 include(protocol/kemtls_pdk_sauth_server.spthy)
 #endif
 
+include(protocol/kemtls_pdk_mutual_defines.spthy)
+#ifdef INCLUDE_KEMTLS_PDK_MUTUAL
+include(protocol/kemtls_pdk_mutual_client.spthy)
+include(protocol/kemtls_pdk_mutual_server.spthy)
+#endif
+
 include(model/oracles.spthy)
 
 include(lemmas/reachable.spthy)

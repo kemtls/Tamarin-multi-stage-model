@@ -1,0 +1,127 @@
+rule KEMTLS_PDK_MUTUAL_ServerAction1:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
+    ss_S = KEM_s_Decaps(ct_S, sk_S)
+    ES = HKDFExtract('0', ss_S)
+    ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
+    cid_1 = <'ETS', M_KEMTLS_PDK_MUTUAL_STAGE1_TRANSCRIPT>
+    sid_1 = <'ETS', M_KEMTLS_PDK_MUTUAL_STAGE1_TRANSCRIPT>
+    CLIENT_CERTIFICATE = <pk_C>
+    dES = HKDFExpand(ES, 'derived', '0')
+    ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
+    ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
+    SERVER_HELLO = <ct_e, ~r_s>
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO>)
+    cid_2 = <'CHTS', M_KEMTLS_PDK_MUTUAL_STAGE2_TRANSCRIPT>
+    sid_2 = <'CHTS', M_KEMTLS_PDK_MUTUAL_STAGE2_TRANSCRIPT>
+    SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO>)
+    cid_3 = <'SHTS', M_KEMTLS_PDK_MUTUAL_STAGE3_TRANSCRIPT>
+    sid_3 = <'SHTS', M_KEMTLS_PDK_MUTUAL_STAGE3_TRANSCRIPT>
+    dHS = HKDFExpand(HS, 'derived', '0')
+    ct_C = KEM_c_Encaps_ct(pk_C, ~coins_C)
+    ss_C = KEM_c_Encaps_ss(pk_C, ~coins_C)
+    SERVER_KEM_CIPHERTEXT = <ct_C>
+    MS = HKDFExtract(dHS, ss_C)
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    SF = HMAC(fk_s, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT>)
+    SERVER_FINISHED = <SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
+    cid_4 = <'SATS', M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT>
+    sid_4 = <'SATS', M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT>
+  in
+  [
+    Fr(~tid),
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    !Pk($C, pk_C, 'KEM_c'),
+    In(<CLIENT_HELLO, CLIENT_CERTIFICATE>),
+    Fr(~coins_e),
+    Fr(~coins_C),
+    Fr(~r_s)
+  ]
+  --[
+    ProtocolMode(~tid, '1', '1', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '1', '2', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '1', '3', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '1', '4', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '2', '2', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '2', '3', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '2', '4', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '3', '3', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '3', '4', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '4', '4', 'KEMTLS_PDK_MUTUAL'),
+    Owner(~tid, $S),
+    Peer(~tid, $C),
+    Role(~tid, 'server'),
+    CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
+    CID(~tid, '2', cid_2), SID(~tid, '2', sid_2),
+    CID(~tid, '3', cid_3), SID(~tid, '3', sid_3),
+    CID(~tid, '4', cid_4), SID(~tid, '4', sid_4),
+    Accept(~tid, '1'),
+    Accept(~tid, '2'),
+    Accept(~tid, '3'),
+    Accept(~tid, '4'),
+    SK(~tid, '1', ETS), 
+    FS(~tid, '1', '1', 'nofs'), FS(~tid, '1', '2', 'nofs'), FS(~tid, '1', '3', 'nofs'), FS(~tid, '1', '4', 'nofs'),
+    SK(~tid, '2', CHTS),
+    FS(~tid, '2', '2', 'wfs1'), FS(~tid, '2', '3', 'wfs1'), FS(~tid, '2', '4', 'wfs1'),
+    SK(~tid, '3', SHTS),
+    FS(~tid, '3', '3', 'wfs1'), FS(~tid, '3', '4', 'wfs1'),
+    SK(~tid, '4', SATS),
+    FS(~tid, '4', '4', 'wfs2'),
+    Replayable(~tid, '1')
+  ]->
+  [ 
+    Out(~tid),
+    Out(<SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>),
+    State(~tid, 'KEMTLS_PDK_MUTUAL', 'ServerAction1', <MS, fk_c>, M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT),
+    !SessionKey(~tid, '1', ETS),
+    !SessionKey(~tid, '2', CHTS),
+    !SessionKey(~tid, '3', SHTS),
+    !SessionKey(~tid, '4', SATS)
+  ]
+
+rule KEMTLS_PDK_MUTUAL_ServerAction2:
+  let
+    SERVER_CERTIFICATE = <pk_S>
+    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
+    CLIENT_CERTIFICATE = <pk_C>
+    SERVER_HELLO = <ct_e, r_s>
+    SERVER_KEM_CIPHERTEXT = <ct_C>
+    SERVER_FINISHED = <SF>
+    CF = HMAC(fk_c, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
+    CLIENT_FINISHED = <CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED, CLIENT_FINISHED>)
+    cid_5 = <'CATS', M_KEMTLS_PDK_MUTUAL_STAGE5_TRANSCRIPT>
+    sid_5 = <'CATS', M_KEMTLS_PDK_MUTUAL_STAGE5_TRANSCRIPT>
+  in
+  [
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    State(tid, 'KEMTLS_PDK_MUTUAL', 'ServerAction1', <MS, fk_c>, M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT),
+    In(<CLIENT_FINISHED>)
+  ]
+  --[
+    ProtocolMode(tid, '1', '5', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(tid, '2', '5', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(tid, '3', '5', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(tid, '4', '5', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(tid, '5', '5', 'KEMTLS_PDK_MUTUAL'),
+    CID(tid, '5', cid_5), SID(tid, '5', sid_5),
+    Accept(tid, '5'),
+    FS(tid, '1', '5', 'nofs'),
+    FS(tid, '2', '5', 'fs'),
+    FS(tid, '3', '5', 'fs'),
+    FS(tid, '4', '5', 'fs'),
+    FS(tid, '5', '5', 'fs'),
+    SK(tid, '5', CATS),
+    Auth(tid, '1', '5'),
+    Auth(tid, '2', '5'),
+    Auth(tid, '3', '5'),
+    Auth(tid, '4', '5'),
+    Auth(tid, '5', '5')
+  ]->
+  [ 
+    !SessionKey(tid, '5', CATS)
+  ]
