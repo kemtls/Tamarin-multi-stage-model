@@ -1,0 +1,13 @@
+changequote(<!,!>)
+
+theory corekt_deniability
+begin
+
+include(protocol/primitives.spthy)
+
+include(protocol/kemtls_keygen.spthy)
+
+include(protocol/kemtls_sauth_defines.spthy)
+include(deniability/kemtls_sauth.spthy)
+
+end
