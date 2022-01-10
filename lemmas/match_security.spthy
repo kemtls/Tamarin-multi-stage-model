@@ -87,6 +87,14 @@ lemma match_prop2:
     & SID(tid_b, stage, sid) @ #t2
     & Role(tid_a, role_a) @ #t3
     & Role(tid_b, role_b) @ #t4
+    // Added in Definition B.4.1 property 2 of https://eprint.iacr.org/2021/779.pdf
+    & (
+      not(role_a = 'server')
+      | (
+        role_b = 'server'
+        & not(Ex #tr . Replayable(tid_a, stage) @ #tr)
+      )
+    )
     ==> not(role_a = role_b)
   "
 
@@ -161,6 +169,8 @@ lemma match_prop6:
     All tid_a tid_b tid_c stage_i sid #t1 #t2 #t3
     .
     not(tid_a = tid_b)
+    // Added in Definition B.4.1 property 7 of https://eprint.iacr.org/2021/779.pdf
+    & not(Ex #tr . Replayable(tid_a, stage_i) @ #tr)
     & SID(tid_a, stage_i, sid) @ #t1
     & SID(tid_b, stage_i, sid) @ #t2
     & SID(tid_c, stage_i, sid) @ #t3
