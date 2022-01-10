@@ -1,7 +1,7 @@
 rule KEMTLS_SAUTH_OR_MUTUAL_ClientAction1:
   let
     pk_e = KEM_e_PK(~sk_e)
-    CLIENT_HELLO = <pk_e, ~r_c>
+    CLIENT_HELLO = <'ClientHello', pk_e, ~r_c>
     cid_1 = <'CHTS', CLIENT_HELLO>
     ES = HKDFExtract('0', '0')
     dES = HKDFExpand(ES, 'derived', '0')

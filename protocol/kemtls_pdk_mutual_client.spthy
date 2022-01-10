@@ -1,15 +1,15 @@
 rule KEMTLS_PDK_MUTUAL_ClientAction1:
   let
-    SERVER_CERTIFICATE = <pk_S>
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
     pk_e = KEM_e_PK(~sk_e)
     ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
     ct_S = KEM_s_Encaps_ct(pk_S, ~coins_S)
-    CLIENT_HELLO = <pk_e, ~r_c, ct_S, 'pdk_mode', H(pk_S)>
+    CLIENT_HELLO = <'ClientHello', pk_e, ~r_c, ct_S, 'pdk_mode', H(pk_S)>
     ES = HKDFExtract('0', ss_S)
     ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
     cid_1 = <'ETS', M_KEMTLS_PDK_MUTUAL_STAGE1_TRANSCRIPT>
     sid_1 = <'ETS', M_KEMTLS_PDK_MUTUAL_STAGE1_TRANSCRIPT>
-    CLIENT_CERTIFICATE = <pk_C>
+    CLIENT_CERTIFICATE = <'ClientCertificate', pk_C>
     dES = HKDFExpand(ES, 'derived', '0')
   in
   [
@@ -40,10 +40,10 @@ rule KEMTLS_PDK_MUTUAL_ClientAction1:
 
 rule KEMTLS_PDK_MUTUAL_ClientAction2_part1:
   let
-    SERVER_CERTIFICATE = <pk_S>
-    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
-    CLIENT_CERTIFICATE = <pk_C>
-    SERVER_HELLO = <ct_e, r_s>
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
+    CLIENT_HELLO = <'ClientHello', pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
+    CLIENT_CERTIFICATE = <'ClientCertificate', pk_C>
+    SERVER_HELLO = <'ServerHello', ct_e, r_s>
     ss_e = KEM_e_Decaps(ct_e, sk_e)
     HS = HKDFExtract(dES, ss_e)
     CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO>)
@@ -53,7 +53,7 @@ rule KEMTLS_PDK_MUTUAL_ClientAction2_part1:
     cid_3 = <'SHTS', M_KEMTLS_PDK_MUTUAL_STAGE3_TRANSCRIPT>
     sid_3 = <'SHTS', M_KEMTLS_PDK_MUTUAL_STAGE3_TRANSCRIPT>
     dHS = HKDFExpand(HS, 'derived', '0')
-    SERVER_KEM_CIPHERTEXT = <ct_C>
+    SERVER_KEM_CIPHERTEXT = <'ServerKEMCiphertext', ct_C>
     ss_C = KEM_c_Decaps(ct_C, sk_C)
     MS = HKDFExtract(dHS, ss_C)
   in
@@ -87,20 +87,20 @@ rule KEMTLS_PDK_MUTUAL_ClientAction2_part1:
 
 rule KEMTLS_PDK_MUTUAL_ClientAction2_part2:
   let
-    SERVER_CERTIFICATE = <pk_S>
-    CLIENT_HELLO = <pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
-    CLIENT_CERTIFICATE = <pk_C>
-    SERVER_HELLO = <ct_e, r_s>
-    SERVER_KEM_CIPHERTEXT = <ct_C>
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
+    CLIENT_HELLO = <'ClientHello', pk_e, r_c, ct_S, 'pdk_mode', H(pk_S)>
+    CLIENT_CERTIFICATE = <'ClientCertificate', pk_C>
+    SERVER_HELLO = <'ServerHello', ct_e, r_s>
+    SERVER_KEM_CIPHERTEXT = <'ServerKEMCiphertext', ct_C>
     fk_c = HKDFExpand(MS, 'c_finished', '0')
     fk_s = HKDFExpand(MS, 's_finished', '0')
     SF = HMAC(fk_s, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT>)
-    SERVER_FINISHED = <SF>
+    SERVER_FINISHED = <'ServerFinished', SF>
     SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
     cid_4 = <'SATS', M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT>
     sid_4 = <'SATS', M_KEMTLS_PDK_MUTUAL_STAGE4_TRANSCRIPT>
     CF = HMAC(fk_c, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
-    CLIENT_FINISHED = <CF>
+    CLIENT_FINISHED = <'ClientFinished', CF>
     CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED, CLIENT_FINISHED>)
     cid_5 = <'CATS', M_KEMTLS_PDK_MUTUAL_STAGE5_TRANSCRIPT>
     sid_5 = <'CATS', M_KEMTLS_PDK_MUTUAL_STAGE5_TRANSCRIPT>

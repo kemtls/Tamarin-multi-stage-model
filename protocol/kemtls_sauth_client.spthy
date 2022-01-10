@@ -1,6 +1,6 @@
 rule KEMTLS_SAUTH_ClientAction2:
   let
-    SERVER_HELLO = <ct_e, r_s>
+    SERVER_HELLO = <'ServerHello', ct_e, r_s>
     ss_e = KEM_e_Decaps(ct_e, sk_e)
     HS = HKDFExtract(dES, ss_e)
     CHTS = HKDFExpand(HS, 'c_hs_traffic', M_KEMTLS_SAUTH_STAGE1_TRANSCRIPT)
@@ -10,10 +10,10 @@ rule KEMTLS_SAUTH_ClientAction2:
     cid_2 = <'SHTS', M_KEMTLS_SAUTH_STAGE2_TRANSCRIPT>
     sid_2 = <'SHTS', M_KEMTLS_SAUTH_STAGE2_TRANSCRIPT>
     dHS = HKDFExpand(HS, 'derived', '0')
-    SERVER_CERTIFICATE = <pk_S>
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
     ct_S = KEM_s_Encaps_ct(pk_S, ~coins_S)
     ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
-    CLIENT_KEM_CIPHERTEXT = <ct_S>
+    CLIENT_KEM_CIPHERTEXT = <'ClientKEMCiphertext', ct_S>
     AHS = HKDFExtract(dHS, ss_S)
     CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_SAUTH_STAGE3_TRANSCRIPT)
     cid_3 = <'CAHTS', M_KEMTLS_SAUTH_STAGE3_TRANSCRIPT>
@@ -26,7 +26,7 @@ rule KEMTLS_SAUTH_ClientAction2:
     fk_c = HKDFExpand(MS, 'c_finished', '0')
     fk_s = HKDFExpand(MS, 's_finished', '0')
     CF = HMAC(fk_c, M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
-    CLIENT_FINISHED = <CF>
+    CLIENT_FINISHED = <'ClientFinished', CF>
     CATS = HKDFExpand(MS, 'c_ap_traffic', M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
     cid_5 = <'CATS', M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT>
     sid_5 = <'CATS', M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT>
@@ -73,9 +73,9 @@ rule KEMTLS_SAUTH_ClientAction2:
 
 rule KEMTLS_SAUTH_ClientAction3:
   let
-    SERVER_CERTIFICATE = <pk_S>
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
     SF = HMAC(fk_s, M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
-    SERVER_FINISHED = <SF>
+    SERVER_FINISHED = <'ServerFinished', SF>
     SATS = HKDFExpand(MS, 's_ap_traffic', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT)
     cid_6 = <'SATS', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT>
     sid_6 = <'SATS', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT>
