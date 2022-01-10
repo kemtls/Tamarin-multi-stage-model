@@ -20,7 +20,7 @@ rule KEMTLS_PDK_SAUTH_ClientAction1:
   ]
   --[
     Role(~tid, 'client'),
-    ProtocolMode(~tid, '1', '1', 'KEMTLS_PDK_SAUTH'),
+    ProtocolMode(~tid, '1', '1', 'KEMTLS_PDK_SAUTH_OR_MUTUAL'),
     CID(~tid, '1', cid_1), SID(~tid, '1', sid_1),
     Accept(~tid, '1'),
     Owner(~tid, 'anonymous'),

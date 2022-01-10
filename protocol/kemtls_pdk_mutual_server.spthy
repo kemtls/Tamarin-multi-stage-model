@@ -42,7 +42,7 @@ rule KEMTLS_PDK_MUTUAL_ServerAction1:
     Fr(~r_s)
   ]
   --[
-    ProtocolMode(~tid, '1', '1', 'KEMTLS_PDK_MUTUAL'),
+    ProtocolMode(~tid, '1', '1', 'KEMTLS_PDK_SAUTH_OR_MUTUAL'),
     ProtocolMode(~tid, '1', '2', 'KEMTLS_PDK_MUTUAL'),
     ProtocolMode(~tid, '1', '3', 'KEMTLS_PDK_MUTUAL'),
     ProtocolMode(~tid, '1', '4', 'KEMTLS_PDK_MUTUAL'),
