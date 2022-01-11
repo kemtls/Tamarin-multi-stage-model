@@ -30,7 +30,7 @@ lemma attacker_works_corruptltk_$1:
 !>)
 
 M_LEMMA_ATTACKER_WORKS_CORRUPTLTK(KEM_c)
-M_LEMMA_ATTACKER_WORKS_CORRUPTLTK(KEM_s)
+dnl M_LEMMA_ATTACKER_WORKS_CORRUPTLTK(KEM_s)
 // There's no attacker_works_corruptltk_KEM_e lemma because KEM_e is for 
 // ephemeral keys, not long-term keys, so the attacker can't corrupt them. 
 // If you do generate a attacker_works_corruptltk_KEM_e, Tamarin should 

@@ -1,7 +1,5 @@
 functions: 
   KEM_e_PK/1, KEM_e_Encaps_ct/2, KEM_e_Encaps_ss/2, KEM_e_Decaps/2,
-  KEM_s_PK/1, KEM_s_Encaps_ct/2, KEM_s_Encaps_ss/2, KEM_s_Decaps/2,
-  KEM_c_PK/1, KEM_c_Encaps_ct/2, KEM_c_Encaps_ss/2, KEM_c_Decaps/2,
   HKDFExtract/2, HKDFExpand/3,
   HMAC/2,
   H/1
@@ -9,10 +7,4 @@ functions:
 equations:
   // correctness of KEM_e decapsulation
   KEM_e_Decaps(KEM_e_Encaps_ct(KEM_e_PK(sk), coins), sk) 
-  = KEM_e_Encaps_ss(KEM_e_PK(sk), coins),
-  // correctness of KEM_s decapsulation
-  KEM_s_Decaps(KEM_s_Encaps_ct(KEM_s_PK(sk), coins), sk) 
-  = KEM_s_Encaps_ss(KEM_s_PK(sk), coins),
-  // correctness of KEM_c decapsulation
-  KEM_c_Decaps(KEM_c_Encaps_ct(KEM_c_PK(sk), coins), sk) 
-  = KEM_c_Encaps_ss(KEM_c_PK(sk), coins)
+  = KEM_e_Encaps_ss(KEM_e_PK(sk), coins)
