@@ -8,7 +8,7 @@ rule KEMTLS_MUTUAL_simulated:
     ES = HKDFExtract('0', '0')
     dES = HKDFExpand(ES, 'derived', '0')
     HS = HKDFExtract(dES, ss_e)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     CHTS = HKDFExpand(HS, 'c_hs_traffic', M_KEMTLS_MUTUAL_STAGE1_TRANSCRIPT)
     SHTS = HKDFExpand(HS, 's_hs_traffic', M_KEMTLS_MUTUAL_STAGE2_TRANSCRIPT)
 !>)
@@ -19,7 +19,7 @@ ifdef(FULL, <!
     ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
     CLIENT_KEM_CIPHERTEXT = <'ClientKEMCiphertext', ct_S>
     AHS = HKDFExtract(dHS, ss_S)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_MUTUAL_STAGE3_TRANSCRIPT)
     SAHTS = HKDFExpand(AHS, 's_ahs_traffic', M_KEMTLS_MUTUAL_STAGE4_TRANSCRIPT)
 !>)
@@ -29,7 +29,7 @@ ifdef(FULL, <!
     ss_C = KEM_c_Encaps_ss(pk_C, ~coins_C)
     SERVER_KEM_CIPHERTEXT = <'ServerKEMCiphertext', ct_C>
     MS = HKDFExtract(dAHS, ss_C)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     fk_c = HKDFExpand(MS, 'c_finished', '0')
     fk_s = HKDFExpand(MS, 's_finished', '0')
     CF = HMAC(fk_c, M_KEMTLS_MUTUAL_CF_TRANSCRIPT)
@@ -54,10 +54,10 @@ ifdef(FULL, <!
   [ 
     FakeTranscript(
       <CLIENT_HELLO, SERVER_HELLO, CERTIFICATE_REQUEST, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT, CLIENT_CERTIFICATE, SERVER_KEM_CIPHERTEXT
-        ifdef(FULL, <!, CLIENT_FINISHED, SERVER_FINISHED!>)
+        ifdef(<!FULL!>, <!, CLIENT_FINISHED, SERVER_FINISHED!>)
       >,
       <HS, AHS, MS
-        ifdef(FULL, <!, CHTS, SHTS, CAHTS, SAHTS, CATS, SATS!>)
+        ifdef(<!FULL!>, <!, CHTS, SHTS, CAHTS, SAHTS, CATS, SATS!>)
       >,
       <pk_C, pk_S>
     )

@@ -19,7 +19,7 @@ rule KEMTLS_PDK_MUTUAL_simulated:
     ss_C = KEM_c_Encaps_ss(pk_C, ~coins_C)
     SERVER_KEM_CIPHERTEXT = <'ServerKEMCiphertext', ct_C>
     MS = HKDFExtract(dHS, ss_C)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     fk_c = HKDFExpand(MS, 'c_finished', '0')
     fk_s = HKDFExpand(MS, 's_finished', '0')
     SF = HMAC(fk_s, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT>)
@@ -44,10 +44,10 @@ ifdef(FULL, <!
   [ 
     FakeTranscript(
       <SERVER_CERTIFICATE, CLIENT_HELLO, SERVER_HELLO, SERVER_KEM_CIPHERTEXT
-        ifdef(FULL, <!, SERVER_FINISHED, CLIENT_FINISHED!>)
+        ifdef(<!FULL!>, <!, SERVER_FINISHED, CLIENT_FINISHED!>)
       >,
       <ETS, CHTS, SHTS, MS
-        ifdef(FULL, <!, SATS, CATS!>)
+        ifdef(<!FULL!>, <!, SATS, CATS!>)
       >,
       <pk_C, pk_S>
     )

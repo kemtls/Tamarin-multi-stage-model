@@ -6,7 +6,7 @@ rule KEMTLS_PDK_SAUTH_simulated:
     ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
     CLIENT_HELLO = <'ClientHello', pk_e, ~r_c, ct_S, 'pdk_mode', H(pk_S)>
     ES = HKDFExtract('0', ss_S)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
     dES = HKDFExpand(ES, 'derived', '0')
     ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
@@ -31,7 +31,7 @@ ifdef(FULL, <!
     !Pk($S, pk_S, 'KEM_s'),
     Fr(~sk_e),
     Fr(~r_c),
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     Fr(~r_s),
     Fr(~coins_e),
 !>)
@@ -41,10 +41,10 @@ ifdef(FULL, <!
   [ 
     FakeTranscript(
       <SERVER_CERTIFICATE, CLIENT_HELLO
-        ifdef(FULL, <!, SERVER_HELLO, SERVER_FINISHED, CLIENT_FINISHED!>)
+        ifdef(<!FULL!>, <!, SERVER_HELLO, SERVER_FINISHED, CLIENT_FINISHED!>)
       >,
       <ES
-        ifdef(FULL, <!, ETS, CHTS, SHTS, SATS, CATS!>)
+        ifdef(<!FULL!>, <!, ETS, CHTS, SHTS, SATS, CATS!>)
       >,
       <pk_S>
     )

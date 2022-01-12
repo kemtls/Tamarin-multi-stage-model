@@ -16,7 +16,7 @@ rule KEMTLS_SAUTH_real:
     ss_S = KEM_s_Decaps(ct_S, sk_S)
     CLIENT_KEM_CIPHERTEXT = <'ClientKEMCiphertext', ct_S>
     AHS = HKDFExtract(dHS, ss_S)
-ifdef(FULL, <!
+ifdef(<!FULL!>, <!
     CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_SAUTH_STAGE3_TRANSCRIPT)
     SAHTS = HKDFExpand(AHS, 's_ahs_traffic', M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
     dAHS = HKDFExpand(AHS, 'derived', '0')
@@ -43,10 +43,10 @@ ifdef(FULL, <!
   [ 
     RealTranscript(
       <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT
-        ifdef(FULL, <!, CLIENT_FINISHED, SERVER_FINISHED!>)
+        ifdef(<!FULL!>, <!, CLIENT_FINISHED, SERVER_FINISHED!>)
       >,
       <CHTS, SHTS, AHS
-        ifdef(FULL, <!, CAHTS, SAHTS, CATS, SATS!>)
+        ifdef(<!FULL!>, <!, CAHTS, SAHTS, CATS, SATS!>)
       >,
       <pk_S>
     )
