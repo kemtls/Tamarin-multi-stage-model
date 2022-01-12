@@ -1,0 +1,44 @@
+rule KEMTLS_PDK_MUTUAL_real:
+  let
+    SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
+    pk_e = KEM_e_PK(~sk_e)
+    ct_S = KEM_s_Encaps_ct(pk_S, ~coins_S)
+    ss_S = KEM_s_Decaps(ct_S, sk_S)
+    CLIENT_HELLO = <'ClientHello', pk_e, ~r_c, ct_S, 'pdk_mode', H(pk_S)>
+    ES = HKDFExtract('0', ss_S)
+    ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
+    dES = HKDFExpand(ES, 'derived', '0')
+    ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
+    ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
+    SERVER_HELLO = <'ServerHello', ct_e, ~r_s>
+    HS = HKDFExtract(dES, ss_e)
+    CHTS = HKDFExpand(HS, 'c_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    SHTS = HKDFExpand(HS, 's_hs_traffic', <CLIENT_HELLO, SERVER_HELLO>)
+    dHS = HKDFExpand(HS, 'derived', '0')
+    ct_C = KEM_c_Encaps_ct(pk_C, ~coins_C)
+    ss_C = KEM_c_Decaps(ct_C, sk_C)
+    SERVER_KEM_CIPHERTEXT = <'ServerKEMCiphertext', ct_C>
+    MS = HKDFExtract(dHS, ss_C)
+    // fk_c = HKDFExpand(MS, 'c_finished', '0')
+    // fk_s = HKDFExpand(MS, 's_finished', '0')
+    // SF = HMAC(fk_s, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT>)
+    // SERVER_FINISHED = <'ServerFinished', SF>
+    // SATS = HKDFExpand(MS, 's_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
+    // CF = HMAC(fk_c, <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED>)
+    // CLIENT_FINISHED = <'ClientFinished', CF>
+    // CATS = HKDFExpand(MS, 'c_ap_traffic', <CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT, SERVER_FINISHED, CLIENT_FINISHED>)
+  in
+  [
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
+    !Ltk($C, pk_C, sk_C, 'KEM_c'),
+    Fr(~sk_e),
+    Fr(~r_c),
+    Fr(~r_s),
+    Fr(~coins_e),
+    Fr(~coins_C),
+    Fr(~coins_S)
+  ]
+  --[]->
+  [ 
+    RealTranscript(<SERVER_CERTIFICATE, CLIENT_HELLO, SERVER_HELLO, SERVER_KEM_CIPHERTEXT/*, SERVER_FINISHED, CLIENT_FINISHED*/>, <ETS, CHTS, SHTS, MS/*, SATS, CATS*/>, <pk_C, pk_S>)
+  ]

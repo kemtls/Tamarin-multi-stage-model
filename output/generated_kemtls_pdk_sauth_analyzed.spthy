@@ -1,0 +1,308 @@
+theory corekt_deniability_pdk_sauth begin
+
+// Function signature and definition of the equational theory E
+
+functions: H/1, HKDFExpand/3, HKDFExtract/2, HMAC/2, KEM_c_Decaps/2,
+           KEM_c_Encaps_ct/2, KEM_c_Encaps_ss/2, KEM_c_PK/1, KEM_e_Decaps/2,
+           KEM_e_Encaps_ct/2, KEM_e_Encaps_ss/2, KEM_e_PK/1, KEM_s_Decaps/2,
+           KEM_s_Encaps_ct/2, KEM_s_Encaps_ss/2, KEM_s_PK/1, fst/1, pair/2, snd/1
+equations:
+    KEM_c_Decaps(KEM_c_Encaps_ct(KEM_c_PK(sk), coins), sk)
+  = KEM_c_Encaps_ss(KEM_c_PK(sk), coins),
+    KEM_e_Decaps(KEM_e_Encaps_ct(KEM_e_PK(sk), coins), sk)
+  = KEM_e_Encaps_ss(KEM_e_PK(sk), coins),
+    KEM_s_Decaps(KEM_s_Encaps_ct(KEM_s_PK(sk), coins), sk)
+  = KEM_s_Encaps_ss(KEM_s_PK(sk), coins),
+    fst(<x.1, x.2>) = x.1,
+    snd(<x.1, x.2>) = x.2
+
+
+
+rule (modulo E) KEMTLS_KEM_s_KeyGen:
+   [ Fr( ~sk_P ) ]
+  --[ RegisteredLTK( $P, KEM_s_PK(~sk_P), 'KEM_s' ) ]->
+   [
+   !Ltk( $P, KEM_s_PK(~sk_P), ~sk_P, 'KEM_s' ),
+   !Pk( $P, KEM_s_PK(~sk_P), 'KEM_s' ), Out( KEM_s_PK(~sk_P) )
+   ]
+
+rule (modulo E) KEMTLS_KEM_c_KeyGen:
+   [ Fr( ~sk_P ) ]
+  --[ RegisteredLTK( $P, KEM_c_PK(~sk_P), 'KEM_c' ) ]->
+   [
+   !Ltk( $P, KEM_c_PK(~sk_P), ~sk_P, 'KEM_c' ),
+   !Pk( $P, KEM_c_PK(~sk_P), 'KEM_c' ), Out( KEM_c_PK(~sk_P) )
+   ]
+
+rule (modulo E) KEMTLS_PDK_SAUTH_real:
+   [
+   !Ltk( $S, pk_S, sk_S, 'KEM_s' ), Fr( ~sk_e ), Fr( ~r_c ), Fr( ~coins_S )
+   ]
+  -->
+   [
+   RealTranscript( <<'ServerCertificate', pk_S>, 'ClientHello', 
+                    KEM_e_PK(~sk_e), ~r_c, KEM_s_Encaps_ct(pk_S, ~coins_S), 'pdk_mode', 
+                    H(pk_S)>,
+                   HKDFExtract('0', KEM_s_Decaps(KEM_s_Encaps_ct(pk_S, ~coins_S), sk_S)),
+                   pk_S
+   )
+   ]
+
+rule (modulo E) KEMTLS_PDK_SAUTH_simulated:
+   [ !Pk( $S, pk_S, 'KEM_s' ), Fr( ~sk_e ), Fr( ~r_c ), Fr( ~coins_S ) ]
+  -->
+   [
+   FakeTranscript( <<'ServerCertificate', pk_S>, 'ClientHello', 
+                    KEM_e_PK(~sk_e), ~r_c, KEM_s_Encaps_ct(pk_S, ~coins_S), 'pdk_mode', 
+                    H(pk_S)>,
+                   HKDFExtract('0', KEM_s_Encaps_ss(pk_S, ~coins_S)), pk_S
+   )
+   ]
+
+/* All well-formedness checks were successful. */
+
+diffLemma Observational_equivalence:
+rule-equivalence
+  case Rule_Destrd_0_KEM_c_Decaps
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( KEM_c_Encaps_ct(KEM_c_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( KEM_c_Encaps_ct(KEM_c_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  qed
+next
+  case Rule_Destrd_0_KEM_e_Decaps
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( KEM_e_Encaps_ct(KEM_e_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( KEM_e_Encaps_ct(KEM_e_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  qed
+next
+  case Rule_Destrd_0_KEM_s_Decaps
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( KEM_s_Encaps_ct(KEM_s_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( KEM_s_Encaps_ct(KEM_s_PK(sk), coins) ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  qed
+next
+  case Rule_Destrd_0_fst
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( <x, x.1> ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( <x, x.1> ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  qed
+next
+  case Rule_Destrd_0_snd
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( <x, x.1> ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( <x, x.1> ) ▶₀ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    next
+      case KEMTLS_KEM_s_KeyGen
+      by step( solve( (#vl, 0) ~~> (#i, 0) ) )
+    qed
+  qed
+next
+  case Rule_Equality
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !KD( x ) ▶₁ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      step( solve( (#vl, 0) ~~> (#i, 1) ) )
+        case KEM_c_PK
+        step( solve( !KU( KEM_c_PK(~sk_P) ) @ #vk ) )
+          case KEMTLS_KEM_c_KeyGen
+          MIRRORED
+        next
+          case c_KEM_c_PK
+          by step( solve( !KU( ~sk_P ) @ #vk.1 ) )
+        qed
+      qed
+    next
+      case KEMTLS_KEM_s_KeyGen
+      step( solve( (#vl, 0) ~~> (#i, 1) ) )
+        case KEM_s_PK
+        step( solve( !KU( KEM_s_PK(~sk_P) ) @ #vk ) )
+          case KEMTLS_KEM_s_KeyGen
+          MIRRORED
+        next
+          case c_KEM_s_PK
+          by step( solve( !KU( ~sk_P ) @ #vk.1 ) )
+        qed
+      qed
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !KD( x ) ▶₁ #i ) )
+      case KEMTLS_KEM_c_KeyGen
+      step( solve( (#vl, 0) ~~> (#i, 1) ) )
+        case KEM_c_PK
+        step( solve( !KU( KEM_c_PK(~sk_P) ) @ #vk ) )
+          case KEMTLS_KEM_c_KeyGen
+          MIRRORED
+        next
+          case c_KEM_c_PK
+          by step( solve( !KU( ~sk_P ) @ #vk.1 ) )
+        qed
+      qed
+    next
+      case KEMTLS_KEM_s_KeyGen
+      step( solve( (#vl, 0) ~~> (#i, 1) ) )
+        case KEM_s_PK
+        step( solve( !KU( KEM_s_PK(~sk_P) ) @ #vk ) )
+          case KEMTLS_KEM_s_KeyGen
+          MIRRORED
+        next
+          case c_KEM_s_PK
+          by step( solve( !KU( ~sk_P ) @ #vk.1 ) )
+        qed
+      qed
+    qed
+  qed
+next
+  case Rule_KEMTLS_KEM_c_KeyGen
+  backward-search
+    case LHS
+    step( simplify )
+    MIRRORED
+  next
+    case RHS
+    step( simplify )
+    MIRRORED
+  qed
+next
+  case Rule_KEMTLS_KEM_s_KeyGen
+  backward-search
+    case LHS
+    step( simplify )
+    MIRRORED
+  next
+    case RHS
+    step( simplify )
+    MIRRORED
+  qed
+next
+  case Rule_KEMTLS_PDK_SAUTH_real
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !Ltk( $S, pk_S, sk_S, 'KEM_s' ) ▶₀ #i ) )
+      case KEMTLS_KEM_s_KeyGen
+      MIRRORED
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !Ltk( $S, pk_S, sk_S, 'KEM_s' ) ▶₀ #i ) )
+      case KEMTLS_KEM_s_KeyGen
+      MIRRORED
+    qed
+  qed
+next
+  case Rule_KEMTLS_PDK_SAUTH_simulated
+  backward-search
+    case LHS
+    step( simplify )
+    step( solve( !Pk( $S, pk_S, 'KEM_s' ) ▶₀ #i ) )
+      case KEMTLS_KEM_s_KeyGen
+      MIRRORED
+    qed
+  next
+    case RHS
+    step( simplify )
+    step( solve( !Pk( $S, pk_S, 'KEM_s' ) ▶₀ #i ) )
+      case KEMTLS_KEM_s_KeyGen
+      MIRRORED
+    qed
+  qed
+next
+  case Rule_Send
+  backward-search
+    case LHS
+    step( simplify )
+    MIRRORED
+  next
+    case RHS
+    step( simplify )
+    MIRRORED
+  qed
+qed
+
+end
