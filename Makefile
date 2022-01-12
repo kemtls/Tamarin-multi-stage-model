@@ -6,6 +6,10 @@ preprocess:
 	cd deniability && m4 kemtls_mutual.spthy > generated_kemtls_mutual.spthy
 	cd deniability && m4 kemtls_pdk_sauth.spthy > generated_kemtls_pdk_sauth.spthy
 	cd deniability && m4 kemtls_pdk_mutual.spthy > generated_kemtls_pdk_mutual.spthy
+	cd deniability && m4 --define=FULL kemtls_sauth.spthy > generated_kemtls_sauth_full.spthy
+	cd deniability && m4 --define=FULL kemtls_mutual.spthy > generated_kemtls_mutual_full.spthy
+	cd deniability && m4 --define=FULL kemtls_pdk_sauth.spthy > generated_kemtls_pdk_sauth_full.spthy
+	cd deniability && m4 --define=FULL kemtls_pdk_mutual.spthy > generated_kemtls_pdk_mutual_full.spthy
 
 prove-sauth: preprocess
 	tamarin-prover -DINCLUDE_KEMTLS_SAUTH_OR_MUTUAL -DINCLUDE_KEMTLS_SAUTH --quit-on-warning generated_corekt.spthy
@@ -38,16 +42,30 @@ prove-all: preprocess
 deniability-sauth: preprocess
 	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_sauth.spthy
 
+deniability-sauth-full: preprocess
+	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_sauth_full.spthy
+
 deniability-mutual: preprocess
 	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_mutual.spthy
+
+deniability-mutual-full: preprocess
+	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_mutual_full.spthy
 
 deniability-pdk-sauth: preprocess
 	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_pdk_sauth.spthy
 
+deniability-pdk-sauth-full: preprocess
+	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_pdk_sauth_full.spthy
+
 deniability-pdk-mutual: preprocess
 	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_pdk_mutual.spthy
 
+deniability-pdk-mutual-full: preprocess
+	tamarin-prover --quit-on-warning --diff --prove --output --Output=output deniability/generated_kemtls_pdk_mutual_full.spthy
+
 deniability-all: deniability-sauth deniability-mutual deniability-pdk-sauth deniability-pdk-mutual
+
+deniability-full-all: deniability-sauth-full deniability-mutual-full deniability-pdk-sauth-full deniability-pdk-mutual-full
 
 clean:
 	$(RM) -f generated_* */generated_*

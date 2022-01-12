@@ -16,18 +16,20 @@ rule KEMTLS_SAUTH_simulated:
     ss_S = KEM_s_Encaps_ss(pk_S, ~coins_S)
     CLIENT_KEM_CIPHERTEXT = <'ClientKEMCiphertext', ct_S>
     AHS = HKDFExtract(dHS, ss_S)
-    // CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_SAUTH_STAGE3_TRANSCRIPT)
-    // SAHTS = HKDFExpand(AHS, 's_ahs_traffic', M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
-    // dAHS = HKDFExpand(AHS, 'derived', '0')
-    // MS = HKDFExtract(dAHS, '0')
-    // fk_c = HKDFExpand(MS, 'c_finished', '0')
-    // fk_s = HKDFExpand(MS, 's_finished', '0')
-    // CF = HMAC(fk_c, M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
-    // CLIENT_FINISHED = <'ClientFinished', CF>
-    // CATS = HKDFExpand(MS, 'c_ap_traffic', M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
-    // SF = HMAC(fk_s, M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
-    // SERVER_FINISHED = <'ServerFinished', SF>
-    // SATS = HKDFExpand(MS, 's_ap_traffic', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT)
+ifdef(FULL, <!
+    CAHTS = HKDFExpand(AHS, 'c_ahs_traffic', M_KEMTLS_SAUTH_STAGE3_TRANSCRIPT)
+    SAHTS = HKDFExpand(AHS, 's_ahs_traffic', M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
+    dAHS = HKDFExpand(AHS, 'derived', '0')
+    MS = HKDFExtract(dAHS, '0')
+    fk_c = HKDFExpand(MS, 'c_finished', '0')
+    fk_s = HKDFExpand(MS, 's_finished', '0')
+    CF = HMAC(fk_c, M_KEMTLS_SAUTH_STAGE4_TRANSCRIPT)
+    CLIENT_FINISHED = <'ClientFinished', CF>
+    CATS = HKDFExpand(MS, 'c_ap_traffic', M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
+    SF = HMAC(fk_s, M_KEMTLS_SAUTH_STAGE5_TRANSCRIPT)
+    SERVER_FINISHED = <'ServerFinished', SF>
+    SATS = HKDFExpand(MS, 's_ap_traffic', M_KEMTLS_SAUTH_STAGE6_TRANSCRIPT)
+!>)
   in
   [
     !Pk($S, pk_S, 'KEM_s'),
@@ -39,5 +41,13 @@ rule KEMTLS_SAUTH_simulated:
   ]
   --[]->
   [ 
-    FakeTranscript(<CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT/*, CLIENT_FINISHED, SERVER_FINISHED*/>, <CHTS, SHTS, AHS/*, CAHTS, SAHTS, CATS, SATS*/>, <pk_S>)
+    FakeTranscript(
+      <CLIENT_HELLO, SERVER_HELLO, SERVER_CERTIFICATE, CLIENT_KEM_CIPHERTEXT
+        ifdef(FULL, <!, CLIENT_FINISHED, SERVER_FINISHED!>)
+      >,
+      <CHTS, SHTS, AHS
+        ifdef(FULL, <!, CAHTS, SAHTS, CATS, SATS!>)
+      >,
+      <pk_S>
+    )
   ]
