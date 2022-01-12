@@ -49,6 +49,6 @@ ifdef(<!FULL!>, <!
       <ETS, CHTS, SHTS, MS
         ifdef(<!FULL!>, <!, SATS, CATS!>)
       >,
-      <pk_C, pk_S>
+      <pk_C, sk_C, pk_S, sk_S>
     )
   ]

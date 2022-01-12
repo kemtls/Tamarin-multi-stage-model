@@ -13,12 +13,12 @@ include(kemtls_mutual_simulated.spthy)
 
 rule real_vs_simulated:
   [
-    RealTranscript(transcript_real, session_keys_real, public_keys),
-    FakeTranscript(transcript_simulated, session_keys_simulated, public_keys)
+    RealTranscript(transcript_real, session_keys_real, long_term_keys),
+    FakeTranscript(transcript_simulated, session_keys_simulated, long_term_keys)
   ]
   --[]->
   [
-    Out(diff(<transcript_real, session_keys_real>, <transcript_simulated, session_keys_simulated>))
+    Out(diff(<transcript_real, session_keys_real, long_term_keys>, <transcript_simulated, session_keys_simulated, long_term_keys>))
   ]
 
 end

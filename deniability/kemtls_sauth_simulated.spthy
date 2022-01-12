@@ -32,7 +32,7 @@ ifdef(<!FULL!>, <!
 !>)
   in
   [
-    !Pk($S, pk_S, 'KEM_s'),
+    !Ltk($S, pk_S, sk_S, 'KEM_s'),
     Fr(~sk_e),
     Fr(~r_c),
     Fr(~r_s),
@@ -48,6 +48,6 @@ ifdef(<!FULL!>, <!
       <CHTS, SHTS, AHS
         ifdef(<!FULL!>, <!, CAHTS, SAHTS, CATS, SATS!>)
       >,
-      <pk_S>
+      <pk_S, sk_S>
     )
   ]

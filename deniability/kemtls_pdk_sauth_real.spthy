@@ -46,6 +46,6 @@ ifdef(<!FULL!>, <!
       <ES
         ifdef(<!FULL!>, <!, ETS, CHTS, SHTS, SATS, CATS!>)
       >,
-      <pk_S>
+      <pk_S, sk_S>
     )
   ]
