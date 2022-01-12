@@ -7,6 +7,7 @@ rule KEMTLS_PDK_MUTUAL_simulated:
     CLIENT_HELLO = <'ClientHello', pk_e, ~r_c, ct_S, 'pdk_mode', H(pk_S)>
     ES = HKDFExtract('0', ss_S)
     ETS = HKDFExpand(ES, 'early_data', <CLIENT_HELLO>)
+    CLIENT_CERTIFICATE = <'ClientCertificate', pk_C>
     dES = HKDFExpand(ES, 'derived', '0')
     ct_e = KEM_e_Encaps_ct(pk_e, ~coins_e)
     ss_e = KEM_e_Encaps_ss(pk_e, ~coins_e)
@@ -43,7 +44,7 @@ ifdef(<!FULL!>, <!
   --[]->
   [ 
     FakeTranscript(
-      <SERVER_CERTIFICATE, CLIENT_HELLO, SERVER_HELLO, SERVER_KEM_CIPHERTEXT
+      <SERVER_CERTIFICATE, CLIENT_HELLO, CLIENT_CERTIFICATE, SERVER_HELLO, SERVER_KEM_CIPHERTEXT
         ifdef(<!FULL!>, <!, SERVER_FINISHED, CLIENT_FINISHED!>)
       >,
       <ETS, CHTS, SHTS, MS
