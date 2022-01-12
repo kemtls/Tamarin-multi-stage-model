@@ -1,3 +1,6 @@
+/* This rule generates a *simulated* transcript for KEMTLS-PDK in mutual
+ * authentication mode, without using any party's long-term secret keys.
+ */
 rule KEMTLS_PDK_MUTUAL_simulated:
   let
     SERVER_CERTIFICATE = <'ServerCertificate', pk_S>

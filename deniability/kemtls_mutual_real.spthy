@@ -1,3 +1,7 @@
+/* This rule generates a *real* transcript for KEMTLS in mutual
+ * authentication mode, using the client's and server's long-term secret keys
+ * to decapsulate.
+ */
 rule KEMTLS_MUTUAL_real:
   let
     pk_e = KEM_e_PK(~sk_e)

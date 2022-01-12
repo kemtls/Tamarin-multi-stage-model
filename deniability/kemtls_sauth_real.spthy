@@ -1,3 +1,6 @@
+/* This rule generates a *real* transcript for KEMTLS in server-only 
+ * authentication mode, using the server's long-term secret key to decapsulate.
+ */
 rule KEMTLS_SAUTH_real:
   let
     pk_e = KEM_e_PK(~sk_e)

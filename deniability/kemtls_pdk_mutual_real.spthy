@@ -1,3 +1,7 @@
+/* This rule generates a *real* transcript for KEMTLS-PDK in mutual
+ * authentication mode, using the client's and server's long-term secret keys
+ * to decapsulate.
+ */
 rule KEMTLS_PDK_MUTUAL_real:
   let
     SERVER_CERTIFICATE = <'ServerCertificate', pk_S>
