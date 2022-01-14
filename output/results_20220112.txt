@@ -1,0 +1,49 @@
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_sauth_full.spthy
+
+  output:          output/generated_kemtls_sauth_full_analyzed.spthy
+  processing time: 57055.122118202s
+  DiffLemma:  Observational_equivalence : verified (174527 steps)
+
+==============================================================================
+
+real    950m56.801s
+user    4534m37.910s
+sys     5479m13.448s
+
+
+
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_pdk_sauth_full.spthy
+
+  output:          output/generated_kemtls_pdk_sauth_full_analyzed.spthy
+  processing time: 3354.075301046s
+  DiffLemma:  Observational_equivalence : verified (10425 steps)
+
+==============================================================================
+
+real    55m54.392s
+user    255m27.936s
+sys     347m56.623s
+
+
+
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_pdk_mutual_full.spthy
+
+  output:          output/generated_kemtls_pdk_mutual_full.spthy
+  processing time: 159205.460485776s
+  DiffLemma:  Observational_equivalence : verified (307763 steps)
+
+==============================================================================
+
+real    2653m28.709s
+user    12753m44.194s
+sys     15138m36.233s
+
