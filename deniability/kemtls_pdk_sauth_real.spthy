@@ -1,3 +1,6 @@
+/* This rule generates a *real* transcript for KEMTLS-PDK in server-only 
+ * authentication mode, using the server's long-term secret key to decapsulate.
+ */
 rule KEMTLS_PDK_SAUTH_real:
   let
     SERVER_CERTIFICATE = <'ServerCertificate', pk_S>

@@ -1,3 +1,6 @@
+/* This rule generates a *simulated* transcript for KEMTLS in server-only 
+ * authentication mode, without using any party's long-term secret keys.
+ */
 rule KEMTLS_SAUTH_simulated:
   let
     pk_e = KEM_e_PK(~sk_e)

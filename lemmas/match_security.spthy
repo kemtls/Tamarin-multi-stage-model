@@ -9,7 +9,7 @@
  * Defintion B.1 of https://eprint.iacr.org/2020/534.pdf, but has been added here:
  * if two sessions pi and pi' are partnered in some stage i (meaning that they 
  * have pi.sid_i = pi'.sid_i), then they agree on which mode of KEMTLS they
- * are using (sever-only authentication or mutual authentication).
+ * are using (server-only authentication or mutual authentication).
  * This condition was not included in the original paper because the model there
  * did not consider simultaneous execution of multiple protocol modes.
  */
