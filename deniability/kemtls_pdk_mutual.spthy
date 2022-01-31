@@ -1,0 +1,42 @@
+/* This file models the offline deniability of KEMTLS-PDK in mutual authentication mode. */
+
+changequote(<!,!>)
+
+theory corekt_deniability_pdk_mutual
+begin
+
+include(../protocol/primitives.spthy)
+
+include(../protocol/kemtls_keygen.spthy)
+
+include(../protocol/kemtls_pdk_mutual_defines.spthy)
+include(kemtls_pdk_mutual_real.spthy)
+include(kemtls_pdk_mutual_simulated.spthy)
+
+/* This lemma captures the offline deniability of KEMTLS-PDK in mutual authentication mode.
+ * Offline deniability means that a judge, when given a protocol transcript and all of the
+ * keys involved, cannot tell whether the transcript is genuine or forged.
+ *
+ * This is modelled in Tamarin by having one rule that generates real transcripts
+ * uses real secret keys to decapsulate, and another rule that generates simulated
+ * transcripts only using public keys.  The adversary is given the transcripts,
+ * as well as derived session keys and the parties' long-term public and private keys.
+ *
+ * If the M4 macro FULL is defined, then the transcript covers the full protocol
+ * run and all session keys are given to the adversary.
+ * If the M4 macro FULL is not defined, then the transcript only covers up until
+ * the last calculation involving either a real or simulated key, and then all
+ * subsequent messages and keys that can clearly be publicly computed are omitted
+ * to make things easier for Tamarin to prove.
+ */
+rule real_vs_simulated:
+  [
+    RealTranscript(transcript_real, session_keys_real, long_term_keys),
+    FakeTranscript(transcript_simulated, session_keys_simulated, long_term_keys)
+  ]
+  --[]->
+  [
+    Out(diff(<transcript_real, session_keys_real, long_term_keys>, <transcript_simulated, session_keys_simulated, long_term_keys>))
+  ]
+
+end

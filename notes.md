@@ -4,7 +4,6 @@
 - No application-layer encryption
 - No TLS data structures
 - No PSK mode
-- No modelling of KEMTLS-PDK (yet?)
 
 ## Interesting questions
 
