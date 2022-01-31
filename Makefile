@@ -6,7 +6,7 @@ all: prove
 
 preprocess:
 	m4 corekt.spthy > generated_corekt.spthy
-	sed -i -e 's/KEM_e/KEM_u/g' generated_corekt.spthy
+	# sed -i -e 's/KEM_e/KEM_u/g' generated_corekt.spthy
 	sed -i -e 's/KEM_c/KEM_u/g' generated_corekt.spthy
 	sed -i -e 's/KEM_s/KEM_u/g' generated_corekt.spthy
 	cd deniability && m4 kemtls_sauth.spthy > generated_kemtls_sauth.spthy
