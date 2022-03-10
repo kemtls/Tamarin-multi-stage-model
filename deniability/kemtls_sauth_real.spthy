@@ -51,6 +51,7 @@ ifdef(<!FULL!>, <!
       <CHTS, SHTS, AHS
         ifdef(<!FULL!>, <!, CAHTS, SAHTS, CATS, SATS!>)
       >,
-      <pk_S, sk_S>
+      <pk_S, sk_S>,
+      <~sk_e, ~coins_e, ~coins_S>
     )
   ]
