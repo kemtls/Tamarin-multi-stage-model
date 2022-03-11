@@ -1,0 +1,14 @@
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_sauth.spthy
+
+  output:          output/generated_kemtls_sauth_analyzed.spthy
+  processing time: 10736.764727032s
+  DiffLemma:  Observational_equivalence : verified (132329 steps)
+
+==============================================================================
+
+real    178m58.334s
+user    4933m14.752s
+sys     4868m32.186s
