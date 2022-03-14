@@ -1,0 +1,78 @@
+Git commit: b5036a4baa02cac62a29312065b546a0a3759124
+Running on ygritte.cs.ru.nl
+tamarin-prover 1.6.1
+With options +RTS -N16 -RTS
+
+Mon 14 Mar 2022 09:58:38 PM CET
+
+> env TAMARIN_FLAGS="+RTS -N16 -RTS" python3 run_proofs.py generated_corekt.spthy -DINCLUDE_KEMTLS_SAUTH_OR_MUTUAL -DINCLUDE_KEMTLS_MUTUAL
+[ 1/49] Proving reachable_KEMTLS_MUTUAL_stage1_accepted6_cfs_sfs                  at 21:48:30.505293...	Completed in   62 steps in 0:00:11.597604
+[ 2/49] Proving reachable_KEMTLS_MUTUAL_stage2_accepted6_cfs_sfs                  at 21:48:42.104664...	Completed in   62 steps in 0:00:10.939687
+[ 3/49] Proving reachable_KEMTLS_MUTUAL_stage3_accepted6_cfs_sfs                  at 21:48:53.046085...	Completed in   73 steps in 0:00:08.253092
+[ 4/49] Proving reachable_KEMTLS_MUTUAL_stage4_accepted6_cfs_sfs                  at 21:49:01.300926...	Completed in   73 steps in 0:00:09.601635
+[ 5/49] Proving reachable_KEMTLS_MUTUAL_stage5_accepted5_cwfs2_sfs                at 21:49:10.904300...	Completed in   64 steps in 0:00:09.498624
+[ 6/49] Proving reachable_KEMTLS_MUTUAL_stage5_accepted6_cfs_sfs                  at 21:49:20.404720...	Completed in   68 steps in 0:00:12.951359
+[ 7/49] Proving reachable_KEMTLS_MUTUAL_stage6_accepted6_cfs_sfs                  at 21:49:33.357875...	Completed in   66 steps in 0:00:16.903596
+[ 8/49] Proving attacker_works_revealsk                                           at 21:49:50.263243...	Completed in    3 steps in 0:00:01.487446
+[ 9/49] Proving attacker_works_corruptltk_KEM_c                                   at 21:49:51.752231...	Completed in    3 steps in 0:00:01.195987
+[10/49] Proving attacker_works_corruptltk_KEM_s                                   at 21:49:52.949822...	Completed in    3 steps in 0:00:01.117194
+[11/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage1 at 21:49:54.068486...	Completed in    7 steps in 0:00:01.417721
+[12/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage2 at 21:49:55.488018...	Completed in    7 steps in 0:00:01.379831
+[13/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage3 at 21:49:56.869654...	Completed in   13 steps in 0:00:01.578800
+[14/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_SAUTH_OR_MUTUAL_stage4 at 21:49:58.450593...	Completed in   13 steps in 0:00:01.425948
+[15/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_MUTUAL_stage5          at 21:49:59.877341...	Completed in   15 steps in 0:00:02.109458
+[16/49] Proving attacker_works_learn_sessionkey_modeKEMTLS_MUTUAL_stage6          at 21:50:01.988593...	Completed in   24 steps in 0:00:34.274922
+[17/49] Proving match_prop0                                                       at 21:50:36.265379...	Completed in  418 steps in 0:00:16.307659
+[18/49] Proving match_prop1_i1_j1                                                 at 21:50:52.574569...	Completed in   25 steps in 0:00:01.458574
+[19/49] Proving match_prop1_i2_j1                                                 at 21:50:54.034076...	Completed in   25 steps in 0:00:01.316543
+[20/49] Proving match_prop1_i2_j2                                                 at 21:50:55.352179...	Completed in   25 steps in 0:00:01.330422
+[21/49] Proving match_prop1_i3_j1                                                 at 21:50:56.684138...	Completed in   31 steps in 0:00:01.576892
+[22/49] Proving match_prop1_i3_j2                                                 at 21:50:58.262580...	Completed in   31 steps in 0:00:01.595893
+[23/49] Proving match_prop1_i3_j3                                                 at 21:50:59.859136...	Completed in   43 steps in 0:00:01.777296
+[24/49] Proving match_prop1_i4_j1                                                 at 21:51:01.638063...	Completed in   31 steps in 0:00:01.729787
+[25/49] Proving match_prop1_i4_j2                                                 at 21:51:03.369498...	Completed in   31 steps in 0:00:01.656875
+[26/49] Proving match_prop1_i4_j3                                                 at 21:51:05.027985...	Completed in   43 steps in 0:00:01.969532
+[27/49] Proving match_prop1_i4_j4                                                 at 21:51:06.998285...	Completed in   43 steps in 0:00:02.027736
+[28/49] Proving match_prop1_i5_j1                                                 at 21:51:09.026761...	Completed in   25 steps in 0:00:01.948156
+[29/49] Proving match_prop1_i5_j2                                                 at 21:51:10.976555...	Completed in   25 steps in 0:00:01.869050
+[30/49] Proving match_prop1_i5_j3                                                 at 21:51:12.847743...	Completed in   37 steps in 0:00:02.258738
+[31/49] Proving match_prop1_i5_j4                                                 at 21:51:15.108142...	Completed in   37 steps in 0:00:02.489032
+[32/49] Proving match_prop1_i5_j5                                                 at 21:51:17.598823...	Completed in   33 steps in 0:00:02.197161
+[33/49] Proving match_prop1_i6_j1                                                 at 21:51:19.797255...	Completed in   25 steps in 0:00:02.187283
+[34/49] Proving match_prop1_i6_j2                                                 at 21:51:21.985235...	Completed in   25 steps in 0:00:02.248676
+[35/49] Proving match_prop1_i6_j3                                                 at 21:51:24.235578...	Completed in   37 steps in 0:00:03.109738
+[36/49] Proving match_prop1_i6_j4                                                 at 21:51:27.346964...	Completed in   37 steps in 0:00:02.877496
+[37/49] Proving match_prop1_i6_j5                                                 at 21:51:30.226173...	Completed in   33 steps in 0:00:02.757179
+[38/49] Proving match_prop1_i6_j6                                                 at 21:51:32.985033...	Completed in   33 steps in 0:00:02.644259
+[39/49] Proving match_prop2                                                       at 21:51:35.630953...	Completed in  226 steps in 0:00:05.270617
+[40/49] Proving match_prop3                                                       at 21:51:40.903195...	Completed in   14 steps in 0:00:01.207833
+[41/49] Proving match_prop4                                                       at 21:51:42.112707...	Completed in  236 steps in 0:00:10.110531
+[42/49] Proving match_prop5                                                       at 21:51:52.224909...	Completed in   64 steps in 0:00:01.718291
+[43/49] Proving match_prop6                                                       at 21:51:53.944856...	Completed in  156 steps in 0:00:04.421683
+[44/49] Proving sk_security_nofs_client                                           at 21:51:58.368183...	Completed in  219 steps in 0:00:07.028345
+[45/49] Proving sk_security_nofs_server                                           at 21:52:05.398213...	Completed in  195 steps in 0:00:06.357673
+[46/49] Proving sk_security_wfs1                                                  at 21:52:11.757603...	Completed in  344 steps in 0:00:10.329138
+[47/49] Proving sk_security_wfs2                                                  at 21:52:22.088418...	Completed in  829 steps in 0:00:28.433350
+[48/49] Proving sk_security_fs                                                    at 21:52:50.523452...	Completed in 3195 steps in 0:03:05.000219
+[49/49] Proving malicious_acceptance                                              at 21:55:55.524861...	Completed in 2082 steps in 0:01:39.504869
+
+
+All done in 0:09:05.147164
+
+> time make deniability-mutual
+
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_mutual.spthy
+
+  output:          output/generated_kemtls_mutual_analyzed.spthy
+  processing time: 734.831469208s
+  DiffLemma:  Observational_equivalence : verified (13972 steps)
+
+==============================================================================
+
+real	12m15.003s
+user	57m47.878s
+sys	67m43.014s
+
