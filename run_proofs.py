@@ -32,9 +32,9 @@ def run_tamarin(model: str, prove: Union[str, None], defines: List[str]) -> str:
     return result.stdout
 
 
-def get_lemmas(model: str) -> Iterable[str]:
+def get_lemmas(model: str, defines) -> Iterable[str]:
     """Parse out the lemmas from the output of Tamarin"""
-    lines = run_tamarin(model, None, []).splitlines()
+    lines = run_tamarin(model, None, defines).splitlines()
 
     for line in lines:
         if m := LEMMA_REGEX.match(line):
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     model = sys.argv[1]
     defines = sys.argv[2:]
 
-    lemmas = get_lemmas(model)
+    lemmas = get_lemmas(model, defines)
     start_time = datetime.now()
     prove_lemmas(model, lemmas, defines)
     duration = datetime.now() - start_time
