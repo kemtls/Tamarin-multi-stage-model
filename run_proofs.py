@@ -4,6 +4,7 @@ from ssl import CERT_REQUIRED
 import subprocess
 import re
 from typing import Iterable, List, Optional, Tuple, Union
+import os
 
 #: Fetch lemmas from incomplete output
 LEMMA_REGEX: re.Pattern = re.compile(r"^\s*(?P<lemma>[a-zA-Z0-9_]+) \((all-traces|exists-trace)\): analysis incomplete \(1 steps\)\s*$")
@@ -14,6 +15,8 @@ STEPS_REGEX: str = r"^\s*{lemma} \((all-traces|exists-trace)\): verified \((?P<s
 
 def run_tamarin(model: str, prove: Union[str, None], defines: List[str]) -> str:
     cmd = ["tamarin-prover"]
+    if 'TAMARIN_FLAGS' in os.environ:
+        cmd.extend(os.environ['TAMARIN_FLAGS'].split(' '))
     cmd.extend(defines)
     cmd.append(model)
     if prove is not None:
@@ -66,6 +69,9 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} model.spthy [-Ddefine1 -Ddefine2 ..]")
+        print("")
+        print("Set environment variable TAMARIN_FLAGS to pass additional flags to Tamarin,")
+        print("such as TAMARIN_FLAGS=\"+RTS -N16 -RTS\" to limit number of CPUs used to 16.")
         sys.exit(1)
     model = sys.argv[1]
     defines = sys.argv[2:]
