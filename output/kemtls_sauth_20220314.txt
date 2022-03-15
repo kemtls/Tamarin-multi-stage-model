@@ -78,3 +78,23 @@ real    1m2.401s
 user    4m59.240s
 sys     5m59.438s
 
+
+
+
+> git checkout deniability-with-coins
+> time make deniability-sauth
+
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_sauth.spthy
+
+  output:          output/generated_kemtls_sauth_analyzed.spthy
+  processing time: 6558.982989763s
+  DiffLemma:  Observational_equivalence : verified (132329 steps)
+
+==============================================================================
+
+real    109m20.431s
+user    498m25.617s
+sys     581m2.878s
