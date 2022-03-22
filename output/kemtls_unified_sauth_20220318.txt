@@ -1,0 +1,13 @@
+
+
+[ 1/52] Proving reachable_KEMTLS_SAUTH_OR_MUTUAL_stage1_accepted1_cwfs1_swfs1     at 21:53:35.949943... Completed in   41 steps in 0:00:48.724332
+[ 2/52] Proving reachable_KEMTLS_SAUTH_stage1_accepted6_cfs_swfs1                 at 21:54:24.676169... Completed in   54 steps in 0:23:11.496669
+[ 3/52] Proving reachable_KEMTLS_SAUTH_OR_MUTUAL_stage2_accepted2_cwfs1_swfs1     at 22:17:36.173504... Completed in   41 steps in 0:00:47.129422
+[ 4/52] Proving reachable_KEMTLS_SAUTH_stage2_accepted6_cfs_swfs1                 at 22:18:23.304822... Completed in   54 steps in 0:23:36.122960
+[ 5/52] Proving reachable_KEMTLS_SAUTH_OR_MUTUAL_stage3_accepted3_cwfs2_swfs1     at 22:41:59.428693... Completed in   55 steps in 0:08:44.503361
+[ 6/52] Proving reachable_KEMTLS_SAUTH_stage3_accepted6_cfs_swfs1                 at 22:50:43.933886... Completed in   62 steps in 0:40:17.095024
+[ 7/52] Proving reachable_KEMTLS_SAUTH_OR_MUTUAL_stage4_accepted4_cwfs2_swfs1     at 23:31:01.029845... Completed in   55 steps in 0:08:41.854795
+[ 8/52] Proving reachable_KEMTLS_SAUTH_stage4_accepted6_cfs_swfs1                 at 23:39:42.886438... Completed in   62 steps in 0:40:07.926894
+[ 9/52] Proving reachable_KEMTLS_SAUTH_stage5_accepted5_cwfs2_swfs1               at 00:19:50.814302... Completed in   48 steps in 0:47:35.237407
+[10/52] Proving reachable_KEMTLS_SAUTH_stage5_accepted6_cfs_swfs1                 at 01:07:26.052595... Completed in   57 steps in 5:01:21.567581
+[11/52] Proving reachable_KEMTLS_SAUTH_stage6_accepted6_cfs_swfs1                 at 06:08:47.621006... Douglas killed it after 45 hours

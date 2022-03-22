@@ -1,0 +1,44 @@
+==============================================================================
+summary of summaries:
+
+analyzed: deniability/generated_kemtls_sauth_full.spthy
+
+  output:          output/generated_kemtls_sauth_full_analyzed.spthy
+  processing time: 58012.410636656s
+  DiffLemma:  Observational_equivalence : verified (174527 steps)
+
+==============================================================================
+78,169,625,134,768 bytes allocated in the heap
+49,111,990,332,216 bytes copied during GC
+  15,354,482,120 bytes maximum residency (6988 sample(s))
+      37,334,976 bytes maximum slop
+           44655 MiB total memory in use (0 MB lost due to fragmentation)
+
+                                     Tot time (elapsed)  Avg pause  Max pause
+  Gen  0     50660653 colls, 50660653 par   490925.957s  30120.057s     0.0006s    0.0246s
+  Gen  1      6988 colls,  6987 par   60128.583s  4247.110s     0.6078s    4.3875s
+
+  Parallel GC work balance: 44.94% (serial 0%, perfect 100%)
+
+  TASKS: 34 (1 bound, 33 peak workers (33 total), using -N16)
+
+  SPARKS: 224067 (75127 converted, 0 overflowed, 0 dud, 42497 GC'd, 106443 fizzled)
+
+  INIT    time    0.007s  (  0.034s elapsed)
+  MUT     time  62363.158s  (23645.931s elapsed)
+  GC      time  551054.540s  (34367.168s elapsed)
+  EXIT    time    0.665s  (  0.008s elapsed)
+  Total   time  613418.370s  (58013.140s elapsed)
+
+  Alloc rate    1,253,458,423 bytes per MUT second
+
+  Productivity  10.2% of total user, 40.8% of total elapsed
+
+
+real    966m53.939s
+user    4741m41.962s
+sys     5481m57.226s
+Tue 22 Mar 2022 01:53:45 PM CET
+
+
+(note that it yielded same output (byte-for-byte) as generated_kemtls_sauth_full_analyzed_20220112.spthy.gz)
